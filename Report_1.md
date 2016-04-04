@@ -155,15 +155,15 @@ cannot be rejected despite of the visual evidences:
     ## Variance formula: ~ fitted.values 
     ## Chisquare = 0.9882922    Df = 1     p = 0.3201601
 
-Based on the second plot, *QQ Plot*, the *normality assumption* is also
-not met, because of the distances between the standardized residuals and
-the 45-degree line.
+Based on the second plot, *QQ Plot*, the **normality assumption** is
+also not met, because of the distances between the standardized
+residuals and the 45-degree line.
 
-*Cook's distance plot* can be used to identify influential outliers. In
-our case, value 23 not only has a relatively big value (close to 1), but
-also stands out in some other plots. As a result, it is an outlier in
-our dataset. However, since we cannot double check the data collection
-procedures, nothing can be done to fix it.
+*Cook's distance plot* can be used to identify **influential outliers**.
+In our case, value 23 not only has a relatively big value (close to 1),
+but also stands out in some other plots. As a result, it is an outlier
+in our dataset. However, since we cannot double check the data
+collection procedures, nothing can be done to fix it.
 
 The **independence assumption** was examined by Durbin-Watson test as
 below. Because the p-value is higher than 0.05, at 95% of confidence
@@ -186,10 +186,10 @@ rejected.
     ## DW = 1.5984, p-value = 0.08033
     ## alternative hypothesis: true autocorrelation is greater than 0
 
-Last but not least, multi-collinearity was tested using variance
-inflation factors as below. The results for any of the three independent
-variables are under 4, which is the rule of thumb, meaning that the
-multi-collinearity assumption is met.
+Last but not least, **multi-collinearity** was tested using *variance
+inflation factors* as below. The results for any of the three
+independent variables are under 4, which is the rule of thumb, meaning
+that the multi-collinearity assumption is met.
 
     ##   p_days   er_vis   cl_vis 
     ## 1.389103 1.762564 1.616556
@@ -231,7 +231,7 @@ To validate the results of this model, a new model was proposed using
 the same variables, but radiology visits was transformed by log2. Below
 are the diagnostic plots of this new model and its summary.
 
-![](Report_1_files/figure-markdown_strict/unnamed-chunk-9-1.png)<!-- -->![](Report_1_files/figure-markdown_strict/unnamed-chunk-9-2.png)<!-- -->![](Report_1_files/figure-markdown_strict/unnamed-chunk-9-3.png)<!-- -->![](Report_1_files/figure-markdown_strict/unnamed-chunk-9-4.png)<!-- -->
+![](Report_1_files/figure-markdown_strict/unnamed-chunk-9-1.png)<!-- -->
 
     ## 
     ## Call:
@@ -292,11 +292,8 @@ And below is the summary of this new model.
     ## Multiple R-squared:  0.8354, Adjusted R-squared:  0.8236 
     ## F-statistic: 71.03 on 2 and 28 DF,  p-value: 1.076e-11
 
-Based on the equation to compare the fitness of two regression models:
-
-$F = \\frac{(R\_f^2 - R\_r ^ 2) / (df\_r - df\_f)}{(1 - R\_f^2) / df\_f}$
-
-The resulting F-value is:
+Based on the equation to compare the fitness of two regression models on
+page 68 of the book, the resulting F-value is:
 
     ## [1] 2.759758
 
