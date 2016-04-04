@@ -156,7 +156,7 @@ The results indicate that the overall model is valid at 95% of confidence interv
 
 To validate the results of this model, a new model was proposed using the same variables, but radiology visits was transformed by log2. Below are the diagnostic plots of this new model and its summary.
 
-``` {R echo = FALSE, warning = FALSE}
+``` {R echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 8}
 
 lm_log <- lm(rad_log2 ~ p_days + er_vis + cl_vis, data = data)
 
