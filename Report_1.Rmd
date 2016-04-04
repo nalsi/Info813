@@ -160,7 +160,7 @@ To validate the results of this model, a new model was proposed using the same v
 
 lm_log <- lm(rad_log2 ~ p_days + er_vis + cl_vis, data = data)
 
-par(mfrow = c(2, 2))
+par(mfrow = c(2,2))
 plot(lm_log, which = 1:4)
 
 summary(lm_log)
