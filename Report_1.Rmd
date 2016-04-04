@@ -1,0 +1,236 @@
+---
+title: "Info813 report I: Can we predict radiology visit using patient visting data?"
+output: html_document
+---
+
+Kai Li
+
+4/4/2016
+
+## Problem statement
+
+Two broad groups of questions will be addressed in this report:
+
+1. What is the strongest determinant of the variable radiology visit among the three variables of patient days, emergency room visits, and clinic visits? And how to describe this relationship?
+
+2. After regress radiology visits on the three other variables, how do your conclusion change regarding the relationship between the dependent variable and each independent variable?
+
+## Data description
+
+The original dataset includes 5 variables and 31 observations. The 4 variables are identifier, radiology visits (rad vis), patient days (p days), emergency room visits (er vis), and clinic visits (cl vis). Except for the identifer being a nominal variable, all the other 4 variables are ratio variables. A basic descriptive analysis was conducted over these four variables as below:
+
+```{r setup, echo = FALSE, warning=FALSE}
+
+library(foreign)
+library(psych)
+
+data <- read.spss("radiology.sav")
+data <- data.frame(data)
+colnames(data) <- c("id", "rad_vis", "p_days", "er_vis", "cl_vis")
+
+describeBy(data[, c(2:5)])
+
+data$rad_std <- (data$rad_vis - mean(data$rad_vis)) / sd(data$rad_vis)
+data$rad_log <- log10(data$rad_vis)
+data$rad_log2 <- log2(data$rad_vis)
+
+```
+
+## Analytical method
+
+To answer the research questions, correlation test and regression test were conducted over the dataset. 
+
+The correlation test was conducted between the dependent variable, radiology visits, and the three independent variables, separately.
+
+The regression test was conducted to test the model between the dependent variable, radiology visits, and the three independent variables together. Based on its result, a new model was proposed and tested, the results of which were compared with the first model.
+
+## Results
+
+#### Correlation
+
+To answer the first question, the correlation between variables, the three scatterplots between the dependent variable and three independent variables were plotted as below:
+
+``` {R fig.width = 7, fig.height = 8, echo = FALSE, warning=FALSE}
+
+par(mfrow = c(2,2))
+
+plot(data$rad_vis ~ data$p_days, xlab = "Patient days", ylab = "Radiology visits")
+plot(data$rad_vis ~ data$er_vis, xlab = "Emergency visits", ylab = "Radiology visits")
+plot(data$rad_vis ~ data$cl_vis, xlab = "Clinic visits", ylab = "Radiology visits")
+
+```
+
+Just by looking, emergency room visits is the variable that can best predict radiology visits, because the dots on the second scatterplot are the closest around the virtual regression line. The closeness can be best measured by R-squared value, or the goodness of fit. Below are the calculated R value and corresponding p-values between radiology visits and the three independent variables:
+
+```{R echo = FALSE, warning=FALSE}
+
+r1 <- cor.test(data$rad_vis, data$p_days)
+r2 <- cor.test(data$rad_vis, data$er_vis)
+r3 <- cor.test(data$rad_vis, data$cl_vis)
+
+library(pander)
+
+cor_table <- data.frame(c("Patient days", "Emergency room visits", "Clinic visits"),
+                        c(r1$estimate ^ 2, r2$estimate ^ 2, r3$estimate ^ 2),
+                        c(r1$p.value, r2$p.value, r3$p.value))
+colnames(cor_table) <- c("Variable", "R-squared", "p-value")
+pander(cor_table)
+
+```
+
+The above visual observation is supported by the calculated R-squared value, leading to the conclusion that the correlation between radiology visits and emergency room visits is the strongest among the three independent variables.
+
+#### Regression
+
+In order to create a regression model between radiology visit and three other independent variables, the following assumptions must be met ("Regression diagnostic", n.d.), which will be addressed later in this report.
+
+1. linearity of the relationship between dependent and independent variables
+2. independence of the errors
+3. constant variance of the errors
+4. normality of the errors
+5. multi-collinearity
+
+The following model was established between the dependent variable, radiology visits, and the three independent variables, patient days, emergency room visits, and clinical visits.
+
+``` {R}
+
+lm <- lm(rad_vis ~ p_days + er_vis + cl_vis, data = data)
+
+```
+
+However, in order to determine if this model met all the assumptions of regression model, diagnostic plots were drawn below:
+
+``` {R echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 8}
+
+par(mfrow = c(2,2))
+plot(lm, which = 1:4)
+
+```
+
+According to the first plot, *residuals vs. fitted values*, the **linearity assumption** is largely met by this model, because all the standard residuals are within the range of +/- 2 standard errors. Moreover, the **homoscedasticity assumption** may not be well met as well, because the values are shown some patterns in the vertical directions, making them not so equally distributed along the y = 0 line. The third plot, *scale-location plot* can be used to test the same assumption, even though the results are not clear. However, based on the results of Breusch-Pagan test, the null hypothesis of homoscedasticity cannot be rejected despite of the visual evidences:
+
+``` {R echo = FALSE, warning = FALSE}
+
+library(car)
+
+ncvTest(lm)
+
+```
+
+Based on the second plot, *QQ Plot*, the *normality assumption* is also not met, because of the distances between the standardized residuals and the 45-degree line.
+
+*Cook's distance plot* can be used to identify influential outliers. In our case, value 23 not only has a relatively big value (close to 1), but also stands out in some other plots. As a result, it is an outlier in our dataset. However, since we cannot double check the data collection procedures, nothing can be done to fix it.
+
+The **independence assumption** was examined by Durbin-Watson test as below. Because the p-value is higher than 0.05, at 95% of confidence interval, the null hypothesis that the errors are uncorrelated cannot be rejected.
+
+``` {R echo = F, warning = F}
+
+library(lmtest)
+
+dwtest(lm)
+
+```
+
+Last but not least, multi-collinearity was tested using variance inflation factors as below. The results for any of the three independent variables are under 4, which is the rule of thumb, meaning that the multi-collinearity assumption is met.
+
+``` {R echo = F, warning = F}
+
+vif(lm)
+
+```
+
+Despite of the issues in normality assumption, the summary of our original model is presented below:
+
+``` {R echo = FALSE, warning = FALSE}
+
+f <- summary(lm)
+f
+
+```
+
+The results indicate that the overall model is valid at 95% of confidence interval. And in terms of the predictors, like the correlation analysis shows, emergency room visit is the strongest predictor. Patient days is another valid predictor at 99.999% of confidence interval. However, the null hypothesis that there is no linear correlation between radiology visit and clinical visit cannot be rejected at 95% of confidence interval, despite of the results of correlation analysis.
+
+To validate the results of this model, a new model was proposed using the same variables, but radiology visits was transformed by log2. Below are the diagnostic plots of this new model and its summary.
+
+``` {R echo = FALSE, warning = FALSE}
+
+lm_log <- lm(rad_log2 ~ p_days + er_vis + cl_vis, data = data)
+
+plot(lm_log, which = 1:4)
+
+summary(lm_log)
+
+````
+
+It is clear that the range of standard residuals in this new model is even larger than the original model; while the other requirements are not met in a better way.
+
+To compare with our initial model, especially because clinic visits was not a significant predictor, a new model using radiology visits and the two valid independent variables, patient days and emergency room visits were created:
+
+```{R}
+
+lm_new <- lm(rad_vis ~ p_days + er_vis, data = data)
+
+```
+
+Below are its diagnostic plots, which show similar results as our initial model.
+
+``` {R echo = FALSE, warning = FALSE, fig.width = 7, fig.height = 8}
+
+par(mfrow = c(2,2))
+plot(lm_new, which = 1:4)
+
+```
+
+And below is the summary of this new model.
+
+``` {R echo = FALSE, warning = FALSE}
+
+r <- summary(lm_new)
+r
+
+```
+
+Based on the equation to compare the fitness of two regression models:
+
+$F = \frac{(R_f^2 - R_r ^ 2) / (df_r - df_f)}{(1 - R_f^2) / df_f}$
+
+The resulting F-value is:
+
+``` {R echo = FALSE, warning = FALSE}
+
+F_value <- ((f$r.squared - r$r.squared)/(r$df[2] - f$df[2])) / ((1 - f$r.squared) / f$df[2])
+F_value
+
+```
+
+The critical F-value (1, 27) at 95% of confidence interval is 4.21, which is larger than the F-value comparing the two models. As a result, we cannot draw the conclusion that the new model with two independent variables is significantly better than our initial model.
+
+#### Validation of the regression model
+
+In order to further validate the model, Jackknife validation method was adopted to test if our original model was valid in general. The table below shows the coefficiencies of the original model after each observation is removed.
+
+``` {R echo = F, warning = F}
+
+val_table <- data.frame()
+
+for (i in 1:31) {
+  data_sample <- data[-i,]
+  lm_sample <- summary(lm(rad_vis ~ p_days + er_vis + cl_vis, data = data_sample))
+  val_table[i, 1] <- i
+  val_table[i, 2] <- lm_sample$coefficients[[1]]
+  val_table[i, 3] <- lm_sample$coefficients[[2]]
+  val_table[i, 4] <- lm_sample$coefficients[[3]]
+  val_table[i, 5] <- lm_sample$coefficients[[4]]
+}
+
+colnames(val_table) <- c("Obs", "Intercept", "p_day", "er_vis", "cl_vis")
+
+pander(val_table)
+
+```
+
+## Conclusions
+
+As is shown by our analysis, emergency room visits is the variable that most strongly correlates with radiology visits, in both tests. And despite of its strong correlation, clinic visits was found not to be able to predict radiology visits in our initial model, which might be because of multi-collinearity.
+
+Another conclusion is that, despite of removing an independent variable that is proven not to be able to predict the dependent variable, our new model isn't significantly better than the original one. 
