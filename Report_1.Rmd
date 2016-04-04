@@ -1,6 +1,8 @@
 ---
 title: "Info813 report I: Can we predict radiology visit using patient visting data?"
-output: html_document
+author: Kai Li
+date: April 4, 2016
+output: md_document
 ---
 
 Kai Li
