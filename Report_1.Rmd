@@ -1,5 +1,5 @@
 ---
-title: "Info813 report I: Can we predict radiology visit using patient visting data?"
+title: "Info813 report I: Can we predict radiology visits using patient visiting data?"
 author: Kai Li
 date: April 4, 2016
 output: md_document
@@ -21,7 +21,7 @@ Two broad groups of questions will be addressed in this report:
 
 ## Data description
 
-The original dataset includes 5 variables and 31 observations. The 4 variables are identifier, radiology visits (rad vis), patient days (p days), emergency room visits (er vis), and clinic visits (cl vis). Except for the identifer being a nominal variable, all the other 4 variables are ratio variables. A basic descriptive analysis was conducted over these four variables as below:
+The original dataset includes 5 variables and 31 observations. The 4 variables are identifier, radiology visits (rad vis), patient days (p days), emergency room visits (er vis), and clinic visits (cl vis). Except for the identifier being a nominal variable, all the other 4 variables are ratio variables. A basic descriptive analysis was conducted over these four variables as below:
 
 ```{r setup, echo = FALSE, warning=FALSE}
 
@@ -52,7 +52,7 @@ The regression test was conducted to test the model between the dependent variab
 
 #### Correlation
 
-To answer the first question, the correlation between variables, the three scatterplots between the dependent variable and three independent variables were plotted as below:
+To answer the first question, the correlation between variables, the three scatter plots between the dependent variable and three independent variables were plotted as below:
 
 ``` {R fig.width = 7, fig.height = 8, echo = FALSE, warning=FALSE}
 
@@ -64,7 +64,7 @@ plot(data$rad_vis ~ data$cl_vis, xlab = "Clinic visits", ylab = "Radiology visit
 
 ```
 
-Just by looking, emergency room visits is the variable that can best predict radiology visits, because the dots on the second scatterplot are the closest around the virtual regression line. The closeness can be best measured by R-squared value, or the goodness of fit. Below are the calculated R value and corresponding p-values between radiology visits and the three independent variables:
+Just by looking, emergency room visits is the variable that can best predict radiology visits, because the dots on the second scatter plot are the closest around the virtual regression line. The closeness can be best measured by R-squared value, or the goodness of fit. Below are the calculated R value and corresponding p-values between radiology visits and the three independent variables:
 
 ```{R echo = FALSE, warning=FALSE}
 
@@ -152,7 +152,7 @@ f
 
 ```
 
-The results indicate that the overall model is valid at 95% of confidence interval. And in terms of the predictors, like the correlation analysis shows, emergency room visit is the strongest predictor. Patient days is another valid predictor at 99.999% of confidence interval. However, the null hypothesis that there is no linear correlation between radiology visit and clinical visit cannot be rejected at 95% of confidence interval, despite of the results of correlation analysis.
+The results indicate that the overall model is valid at 95% of confidence interval, because p-value is smaller than 0.05, and F-value is larger than the critical F-value (3, 27). And in terms of the predictors, like the correlation analysis shows, emergency room visits is the strongest predictor. Patient days is another valid predictor at 99.999% of confidence interval. However, the null hypothesis that there is no linear correlation between radiology visits and clinical visits cannot be rejected at 95% of confidence interval, despite of the results of correlation analysis.
 
 To validate the results of this model, a new model was proposed using the same variables, but radiology visits was transformed by log2. Below are the diagnostic plots of this new model and its summary.
 

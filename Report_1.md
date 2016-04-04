@@ -24,7 +24,7 @@ Data description
 The original dataset includes 5 variables and 31 observations. The 4
 variables are identifier, radiology visits (rad vis), patient days (p
 days), emergency room visits (er vis), and clinic visits (cl vis).
-Except for the identifer being a nominal variable, all the other 4
+Except for the identifier being a nominal variable, all the other 4
 variables are ratio variables. A basic descriptive analysis was
 conducted over these four variables as below:
 
@@ -59,14 +59,14 @@ Results
 #### Correlation
 
 To answer the first question, the correlation between variables, the
-three scatterplots between the dependent variable and three independent
+three scatter plots between the dependent variable and three independent
 variables were plotted as below:
 
 ![](Report_1_files/figure-markdown_strict/unnamed-chunk-1-1.png)<!-- -->
 
 Just by looking, emergency room visits is the variable that can best
-predict radiology visits, because the dots on the second scatterplot are
-the closest around the virtual regression line. The closeness can be
+predict radiology visits, because the dots on the second scatter plot
+are the closest around the virtual regression line. The closeness can be
 best measured by R-squared value, or the goodness of fit. Below are the
 calculated R value and corresponding p-values between radiology visits
 and the three independent variables:
@@ -219,13 +219,14 @@ original model is presented below:
     ## F-statistic: 51.25 on 3 and 27 DF,  p-value: 2.816e-11
 
 The results indicate that the overall model is valid at 95% of
-confidence interval. And in terms of the predictors, like the
-correlation analysis shows, emergency room visit is the strongest
-predictor. Patient days is another valid predictor at 99.999% of
-confidence interval. However, the null hypothesis that there is no
-linear correlation between radiology visit and clinical visit cannot be
-rejected at 95% of confidence interval, despite of the results of
-correlation analysis.
+confidence interval, because p-value is smaller than 0.05, and F-value
+is larger than the critical F-value (3, 27). And in terms of the
+predictors, like the correlation analysis shows, emergency room visits
+is the strongest predictor. Patient days is another valid predictor at
+99.999% of confidence interval. However, the null hypothesis that there
+is no linear correlation between radiology visits and clinical visits
+cannot be rejected at 95% of confidence interval, despite of the results
+of correlation analysis.
 
 To validate the results of this model, a new model was proposed using
 the same variables, but radiology visits was transformed by log2. Below
