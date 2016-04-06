@@ -5,11 +5,11 @@ date: April 4, 2016
 output: md_document
 ---
 
-#Info813 report I: Can we predict radiology visit using patient visting data?
+#Info813 report I: Can we predict radiology visits using patient visting data?
 
 Kai Li
 
-4/4/2016
+Last update: 4/6/2016
 
 ## Problem statement
 
@@ -21,7 +21,7 @@ Two broad groups of questions will be addressed in this report:
 
 ## Data description
 
-The original dataset includes 5 variables and 31 observations. The 4 variables are identifier, radiology visits (rad vis), patient days (p days), emergency room visits (er vis), and clinic visits (cl vis). Except for the identifier being a nominal variable, all the other 4 variables are ratio variables. A basic descriptive analysis was conducted over these four variables as below:
+The original dataset includes 5 variables and 31 observations. The 5 variables are **identifier**, **radiology visits (rad vis)**, **patient days (p days)**, **emergency room visits (er vis)**, **and clinic visits (cl vis)**. Except for the identifier being a nominal variable, all the other 4 variables are ratio variables. A basic descriptive analysis was conducted over these four variables as below:
 
 ```{r setup, echo = FALSE, warning=FALSE}
 
@@ -37,6 +37,17 @@ describeBy(data[, c(2:5)])
 data$rad_std <- (data$rad_vis - mean(data$rad_vis)) / sd(data$rad_vis)
 data$rad_log <- log10(data$rad_vis)
 data$rad_log2 <- log2(data$rad_vis)
+
+```
+
+Histograms of the dependent variable and log2 of the dependent variable were plotted below. Even though the distribution of log2 seems to be more normal than the original variable, the original variable of radiology visits will be used to do the correlation and regression tests, with the other one used to validate the results. 
+
+``` {R fig.width = 7, fig.height = 4, echo = FALSE, warning=FALSE}
+
+par(mfrow = c(1,2))
+
+hist(data$rad_vis, main = "Histogram of radiology visits", xlab = "Radiology visit")
+hist(data$rad_log2, main = "Histogram of radiology visits (log2)", xlab = "log2 of Radiology visit")
 
 ```
 
@@ -84,6 +95,32 @@ pander(cor_table)
 
 The above visual observation is supported by the calculated R-squared value, leading to the conclusion that the correlation between radiology visits and emergency room visits is the strongest among the three independent variables.
 
+As a validation of the results, the scatter plots using log2 of the radiology visits and their R-squared values and p-values are listed below:
+
+``` {R fig.width = 7, fig.height = 8, echo = FALSE, warning=FALSE}
+
+par(mfrow = c(2,2))
+
+plot(data$rad_log2 ~ data$p_days, xlab = "Patient days", ylab = "Radiology visits (log2)")
+plot(data$rad_log2 ~ data$er_vis, xlab = "Emergency visits", ylab = "Radiology visits (log2)")
+plot(data$rad_log2 ~ data$cl_vis, xlab = "Clinic visits", ylab = "Radiology visits (log2)")
+
+r1 <- cor.test(data$rad_log2, data$p_days)
+r2 <- cor.test(data$rad_log2, data$er_vis)
+r3 <- cor.test(data$rad_log2, data$cl_vis)
+
+library(pander)
+
+cor_table <- data.frame(c("Patient days", "Emergency room visits", "Clinic visits"),
+                        c(r1$estimate ^ 2, r2$estimate ^ 2, r3$estimate ^ 2),
+                        c(r1$p.value, r2$p.value, r3$p.value))
+colnames(cor_table) <- c("Variable", "R-squared", "p-value")
+pander(cor_table)
+
+```
+
+It is obvious that using the original radiology visits variable and log2 of the same variable does not create much difference.
+
 #### Regression
 
 In order to create a regression model between radiology visit and three other independent variables, the following assumptions must be met ("Regression diagnostic", n.d.), which will be addressed later in this report.
@@ -92,7 +129,7 @@ In order to create a regression model between radiology visit and three other in
 2. independence of the errors
 3. constant variance of the errors
 4. normality of the errors
-5. multi-collinearity
+5. not multi-collinearity
 
 The following model was established between the dependent variable, radiology visits, and the three independent variables, patient days, emergency room visits, and clinical visits.
 
@@ -111,7 +148,7 @@ plot(lm, which = 1:4)
 
 ```
 
-According to the first plot, *residuals vs. fitted values*, the **linearity assumption** is largely met by this model, because all the standard residuals are within the range of +/- 2 standard errors. Moreover, the **homoscedasticity assumption** may not be well met as well, because the values are shown some patterns in the vertical directions, making them not so equally distributed along the y = 0 line. The third plot, *scale-location plot* can be used to test the same assumption, even though the results are not clear. However, based on the results of Breusch-Pagan test, the null hypothesis of homoscedasticity cannot be rejected despite of the visual evidences:
+According to the first plot, *residuals vs. fitted values*, the **linearity assumption** is largely not met by this model, because the values are not so equally distributed across the 0 line. Moreover, the **homoscedasticity assumption** may not be well met as well, because the trend line is not very parallel to the x-axis as well. The third plot, *scale-location plot* can be used to test the same assumption, even though the results are not clear. However, based on the results of Breusch-Pagan test, the null hypothesis of homoscedasticity cannot be rejected despite of the visual evidences:
 
 ``` {R echo = FALSE, warning = FALSE}
 
@@ -123,19 +160,18 @@ ncvTest(lm)
 
 Based on the second plot, *QQ Plot*, the **normality assumption** is also not met, because of the distances between the standardized residuals and the 45-degree line.
 
-*Cook's distance plot* can be used to identify **influential outliers**. In our case, value 23 not only has a relatively big value (close to 1), but also stands out in some other plots. As a result, it is an outlier in our dataset. However, since we cannot double check the data collection procedures, nothing can be done to fix it.
+*Cook's distance plot* can be used to identify **influential outliers**. In our case, value 23 not only has a relatively big value (close to 1), but also stands out in some other plots. As a result, it is an influential outlier in our dataset. However, since we cannot double check the data collection procedures, nothing can be done to fix it.
 
 The **independence assumption** was examined by Durbin-Watson test as below. Because the p-value is higher than 0.05, at 95% of confidence interval, the null hypothesis that the errors are uncorrelated cannot be rejected.
 
 ``` {R echo = F, warning = F}
 
 library(lmtest)
-
 dwtest(lm)
 
 ```
 
-Last but not least, **multi-collinearity** was tested using *variance inflation factors* as below. The results for any of the three independent variables are under 4, which is the rule of thumb, meaning that the multi-collinearity assumption is met.
+Last but not least, **multi-collinearity** was tested using *variance inflation factors* as below. The results for any of the three independent variables are under 4, which is the rule of thumb, meaning that the none-multi-collinearity assumption is met.
 
 ``` {R echo = F, warning = F}
 
@@ -143,7 +179,7 @@ vif(lm)
 
 ```
 
-Despite of the issues in normality assumption, the summary of our original model is presented below:
+Despite of the possible issue in normality assumption, the summary of our original model is presented below:
 
 ``` {R echo = FALSE, warning = FALSE}
 

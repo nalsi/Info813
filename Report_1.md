@@ -1,9 +1,9 @@
-Info813 report I: Can we predict radiology visit using patient visting data?
-============================================================================
+Info813 report I: Can we predict radiology visits using patient visting data?
+=============================================================================
 
 Kai Li
 
-4/4/2016
+Last update: 4/6/2016
 
 Problem statement
 -----------------
@@ -21,11 +21,11 @@ Two broad groups of questions will be addressed in this report:
 Data description
 ----------------
 
-The original dataset includes 5 variables and 31 observations. The 4
-variables are identifier, radiology visits (rad vis), patient days (p
-days), emergency room visits (er vis), and clinic visits (cl vis).
-Except for the identifier being a nominal variable, all the other 4
-variables are ratio variables. A basic descriptive analysis was
+The original dataset includes 5 variables and 31 observations. The 5
+variables are **identifier**, **radiology visits (rad vis)**, **patient
+days (p days)**, **emergency room visits (er vis)**, **and clinic visits
+(cl vis)**. Except for the identifier being a nominal variable, all the
+other 4 variables are ratio variables. A basic descriptive analysis was
 conducted over these four variables as below:
 
     ##         vars  n    mean     sd median trimmed    mad  min  max range  skew
@@ -38,6 +38,14 @@ conducted over these four variables as below:
     ## p_days      0.34 117.87
     ## er_vis     -0.01  31.73
     ## cl_vis     -0.20  17.75
+
+Histograms of the dependent variable and log2 of the dependent variable
+were plotted below. Even though the distribution of log2 seems to be
+more normal than the original variable, the original variable of
+radiology visits will be used to do the correlation and regression
+tests, with the other one used to validate the results.
+
+![](Report_1_files/figure-markdown_strict/unnamed-chunk-1-1.png)<!-- -->
 
 Analytical method
 -----------------
@@ -62,7 +70,7 @@ To answer the first question, the correlation between variables, the
 three scatter plots between the dependent variable and three independent
 variables were plotted as below:
 
-![](Report_1_files/figure-markdown_strict/unnamed-chunk-1-1.png)<!-- -->
+![](Report_1_files/figure-markdown_strict/unnamed-chunk-2-1.png)<!-- -->
 
 Just by looking, emergency room visits is the variable that can best
 predict radiology visits, because the dots on the second scatter plot
@@ -108,6 +116,47 @@ value, leading to the conclusion that the correlation between radiology
 visits and emergency room visits is the strongest among the three
 independent variables.
 
+As a validation of the results, the scatter plots using log2 of the
+radiology visits and their R-squared values and p-values are listed
+below:
+
+<table style="width:60%;">
+<colgroup>
+<col width="30%" />
+<col width="16%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Variable</th>
+<th align="center">R-squared</th>
+<th align="center">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Patient days</td>
+<td align="center">0.4527</td>
+<td align="center">3.367e-05</td>
+</tr>
+<tr class="even">
+<td align="center">Emergency room visits</td>
+<td align="center">0.7563</td>
+<td align="center">2.152e-10</td>
+</tr>
+<tr class="odd">
+<td align="center">Clinic visits</td>
+<td align="center">0.425</td>
+<td align="center">7.092e-05</td>
+</tr>
+</tbody>
+</table>
+
+![](Report_1_files/figure-markdown_strict/unnamed-chunk-4-1.png)<!-- -->
+
+It is obvious that using the original radiology visits variable and log2
+of the same variable does not create much difference.
+
 #### Regression
 
 In order to create a regression model between radiology visit and three
@@ -120,7 +169,7 @@ report.
 2.  independence of the errors
 3.  constant variance of the errors
 4.  normality of the errors
-5.  multi-collinearity
+5.  not multi-collinearity
 
 The following model was established between the dependent variable,
 radiology visits, and the three independent variables, patient days,
@@ -131,18 +180,17 @@ emergency room visits, and clinical visits.
 However, in order to determine if this model met all the assumptions of
 regression model, diagnostic plots were drawn below:
 
-![](Report_1_files/figure-markdown_strict/unnamed-chunk-4-1.png)<!-- -->
+![](Report_1_files/figure-markdown_strict/unnamed-chunk-6-1.png)<!-- -->
 
 According to the first plot, *residuals vs. fitted values*, the
-**linearity assumption** is largely met by this model, because all the
-standard residuals are within the range of +/- 2 standard errors.
-Moreover, the **homoscedasticity assumption** may not be well met as
-well, because the values are shown some patterns in the vertical
-directions, making them not so equally distributed along the y = 0 line.
-The third plot, *scale-location plot* can be used to test the same
-assumption, even though the results are not clear. However, based on the
-results of Breusch-Pagan test, the null hypothesis of homoscedasticity
-cannot be rejected despite of the visual evidences:
+**linearity assumption** is largely not met by this model, because the
+values are not so equally distributed across the 0 line. Moreover, the
+**homoscedasticity assumption** may not be well met as well, because the
+trend line is not very parallel to the x-axis as well. The third plot,
+*scale-location plot* can be used to test the same assumption, even
+though the results are not clear. However, based on the results of
+Breusch-Pagan test, the null hypothesis of homoscedasticity cannot be
+rejected despite of the visual evidences:
 
     ## 
     ## Attaching package: 'car'
@@ -161,9 +209,9 @@ residuals and the 45-degree line.
 
 *Cook's distance plot* can be used to identify **influential outliers**.
 In our case, value 23 not only has a relatively big value (close to 1),
-but also stands out in some other plots. As a result, it is an outlier
-in our dataset. However, since we cannot double check the data
-collection procedures, nothing can be done to fix it.
+but also stands out in some other plots. As a result, it is an
+influential outlier in our dataset. However, since we cannot double
+check the data collection procedures, nothing can be done to fix it.
 
 The **independence assumption** was examined by Durbin-Watson test as
 below. Because the p-value is higher than 0.05, at 95% of confidence
@@ -189,13 +237,13 @@ rejected.
 Last but not least, **multi-collinearity** was tested using *variance
 inflation factors* as below. The results for any of the three
 independent variables are under 4, which is the rule of thumb, meaning
-that the multi-collinearity assumption is met.
+that the none-multi-collinearity assumption is met.
 
     ##   p_days   er_vis   cl_vis 
     ## 1.389103 1.762564 1.616556
 
-Despite of the issues in normality assumption, the summary of our
-original model is presented below:
+Despite of the possible issue in normality assumption, the summary of
+our original model is presented below:
 
     ## 
     ## Call:
@@ -232,7 +280,7 @@ To validate the results of this model, a new model was proposed using
 the same variables, but radiology visits was transformed by log2. Below
 are the diagnostic plots of this new model and its summary.
 
-![](Report_1_files/figure-markdown_strict/unnamed-chunk-9-1.png)<!-- -->
+![](Report_1_files/figure-markdown_strict/unnamed-chunk-11-1.png)<!-- -->
 
     ## 
     ## Call:
@@ -269,7 +317,7 @@ were created:
 Below are its diagnostic plots, which show similar results as our
 initial model.
 
-![](Report_1_files/figure-markdown_strict/unnamed-chunk-11-1.png)<!-- -->
+![](Report_1_files/figure-markdown_strict/unnamed-chunk-13-1.png)<!-- -->
 
 And below is the summary of this new model.
 
