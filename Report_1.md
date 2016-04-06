@@ -140,9 +140,9 @@ Moreover, the **homoscedasticity assumption** may not be well met as
 well, because the values are shown some patterns in the vertical
 directions, making them not so equally distributed along the y = 0 line.
 The third plot, *scale-location plot* can be used to test the same
-assumption, even though the results are not clear. However, based on the
-results of Breusch-Pagan test, the null hypothesis of homoscedasticity
-cannot be rejected despite of the visual evidences:
+assumption, even though the results are not clear visually. However,
+based on the results of Breusch-Pagan test, the null hypothesis of
+homoscedasticity cannot be rejected despite of the visual evidences:
 
     ## 
     ## Attaching package: 'car'
@@ -302,6 +302,16 @@ The critical F-value (1, 27) at 95% of confidence interval is 4.21,
 which is larger than the F-value comparing the two models. As a result,
 we cannot draw the conclusion that the new model with two independent
 variables is significantly better than our initial model.
+
+Just for comparison, another test of fitness was conducted between our
+initial model and the model using log2 as the dependent variable. Below
+is the F value of this comparison:
+
+    ## [1] 1.365718
+
+Similarly, despite of the seeming increased F value in our last model,
+the conclusion, again, fails to prove that there is a significant
+improvement in the latter model.
 
 #### Validation of the regression model
 
@@ -551,12 +561,14 @@ observation is removed.
 Conclusions
 -----------
 
-As is shown by our analysis, emergency room visits is the variable that
-most strongly correlates with radiology visits, in both tests. And
-despite of its strong correlation, clinic visits was found not to be
-able to predict radiology visits in our initial model, which might be
-because of multi-collinearity.
+As is shown by our analysis, **emergency room visits** is the variable
+that most strongly correlates with radiology visits, in both tests. And
+despite of its strong correlation in the first test, **clinic visits**
+was found not to be able to predict radiology visits in our regression
+model, which might be because of multi-collinearity. The results
+concerning patient days did not change in these two tests.
 
 Another conclusion is that, despite of removing an independent variable
 that is proven not to be able to predict the dependent variable, our new
-model isn't significantly better than the original one.
+model isn't significantly better than the original one, despite of an
+increased F value.
