@@ -183,7 +183,6 @@ regression model, diagnostic plots were drawn below:
 ![](Report_1_files/figure-markdown_strict/unnamed-chunk-6-1.png)<!-- -->
 
 According to the first plot, *residuals vs. fitted values*, the
-<<<<<<< HEAD
 **linearity assumption** is largely not met by this model, because the
 values are not so equally distributed across the 0 line. Moreover, the
 **homoscedasticity assumption** may not be well met as well, because the
@@ -192,17 +191,6 @@ trend line is not very parallel to the x-axis as well. The third plot,
 though the results are not clear. However, based on the results of
 Breusch-Pagan test, the null hypothesis of homoscedasticity cannot be
 rejected despite of the visual evidences:
-=======
-**linearity assumption** is largely met by this model, because all the
-standard residuals are within the range of +/- 2 standard errors.
-Moreover, the **homoscedasticity assumption** may not be well met as
-well, because the values are shown some patterns in the vertical
-directions, making them not so equally distributed along the y = 0 line.
-The third plot, *scale-location plot* can be used to test the same
-assumption, even though the results are not clear visually. However,
-based on the results of Breusch-Pagan test, the null hypothesis of
-homoscedasticity cannot be rejected despite of the visual evidences:
->>>>>>> origin/master
 
     ## 
     ## Attaching package: 'car'
