@@ -1,0 +1,180 @@
+---
+title: "Info813_report_week2"
+author: "Kai Li"
+date: "April 8, 2016"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+
+library(foreign)
+library(psych)
+library(lavaan)
+library(semPlot)
+library(pander)
+library(semTools)
+
+data <- read.spss("ostrom.sav")
+output <- matrix(unlist(data), ncol = 9)
+output[is.na(output)] <- 0
+colnames(output) <- c("item1", "item2", "item3", "item4", "item5", "item6", "item7", "item8", "item9")
+rownames(output) <- c("item1", "item2", "item3", "item4", "item5", "item6", "item7", "item8", "item9")
+
+```
+
+# Info813 report week 2: Confirmatory analysis on attitude
+
+## Problem statement
+
+The following questions will be answered in the report:
+
+1. If the three-factor model of attitude is adequate to explain the pattern of correlation observed in the data?
+2. If the first model combined with the method factors is a better model than the original model?
+3. How should the discriminant of the three factors in section 2 be evaluated?
+
+## Data description
+
+The dataset, entitled "Ostrom.sav", is a correlation table between 9 variables based on Ostrom's attitude dataset collected in 1969. The 9 variables were the 3 components of attitudes (affective, behavioral, and cognitive) measured using three different scales (Thurstone, Likert, and Guttman). Below is the detailed definition of these 9 variables:
+
+Variable name | Methods
+--------------|-------------------------
+item1         | Affective -- Thurstone
+item2         | Behaviroal -- Thurstone
+item3         | Cognitive -- Thrustone
+item4         | Affective -- Likert
+item5         | Behaviroal -- Likert
+item6         | Cognitive -- Likert
+item7         | Affective -- Guttman
+item8         | Behaviroal -- Guttman
+item9         | Cognitive -- Guttman
+
+And below is the dataset per se:
+
+``` {R echo = FALSE, warning=FALSE}
+
+pander(output)
+
+```
+
+## Research method
+
+Confirmatory factor analysis (CFA) method was conducted using Lavaan package (version 0.5-20), semPlot package (version 1.0.1), and semTools package (version 0.4-11) under RStudio system (version 0.99.983).
+
+Two models were established using the operationalized concept factors as well as the method factors. The results of these two models were discussed and compared. And the average variance and shared variance of the three factors in the second model were calculated.
+
+## Result
+
+#### Question 1
+
+In order to answer the first question, the following model was established containing the three latent variables, and covariances between them.
+
+``` {R}
+
+cfa.model1 <- "
+Affective =~ item1 + item4 + item7
+Behavioral =~ item2 + item5 + item8
+Cognitive =~ item3 + item6 + item9
+"
+
+```
+
+In Ostrom's original paper about the dataset (1969), it is stated that the correlation table was generated using experts' rating of 163 statements about attitude, which is presumably the original sample size. This number was used in the Lavaan function. Below is the path plot of this model. It is worth noting that even though the covariance lines were not drawn between the three latent variables, they were actually calculated in the final results.
+
+``` {R echo = FALSE, warning=FALSE}
+
+cfa.fit <- lavaan::cfa(cfa.model1, sample.cov = output, sample.nobs = 163)
+
+sem.lav.plot <- semPlotModel_lavaanModel(cfa.model1)
+semPaths(sem.lav.plot)
+
+```
+
+And below is the summary of this model.
+
+``` {R echo = FALSE, warning=FALSE}
+
+summary(cfa.fit, fit.measures = T)
+
+```
+
+Because that:
+
+- Chi-square result is insignificant;
+- CFI and TLI are higher than 0.90; and
+- RMSEA is smaller than 0.05,
+
+we can draw the conclusion that this model is a good fit. However, to determine is the classification of all the variables is equally good, a modification index test was conducted using "modindices" function under Lavaan package. And below is the result:
+
+``` {R echo = F, warning = F}
+
+modindices(cfa.fit, sort. = T)
+
+```
+
+It is shown by the results that Cognitive factor and item 5, Behavioral factor and item 7 and item 9 have much stronger connections than in the current model, which suggests some potential future revisions to this model.
+
+#### Question 2
+
+In order to add the method factor into our consideration, a new model was proposed as below:
+
+``` {R}
+
+cfa.model2 <- "
+Affective =~ item1 + item4 + item7
+Behavioral =~ item2 + item5 + item8
+Cognitive =~ item3 + item6 + item9
+Thurstone =~ item1 + item2 + item3
+Likert =~ item4 + item5 + item6
+Guttman =~ item7 + item8 + item9
+"
+
+```
+
+Unlike the first model, the covariance between the method factors were not included in this overall model, because it was assumed that each method used in the original experiment were independent. And below is the summary of this model:
+
+``` {R echo = F, warning = F, fig.height = 8, fig.width = 7}
+
+cfa.fit2 <- lavaan::cfa(cfa.model2, sample.cov = output, sample.nobs = 163, std.lv = T)
+
+sem.lav.plot <- semPlotModel_lavaanModel(cfa.model2)
+summary(cfa.fit2, fit.measures = T)
+
+```
+
+In order to compare these two models, an ANOVA test was conducted as below. It is worth noting that despite of the difference in AIC and BIC among these two models, the negative result indicated that this comparison is not meaningful.
+
+``` {R echo = F, warning = F}
+
+anova(cfa.fit, cfa.fit2)
+
+```
+
+#### Question 3
+
+According to Farrell & Rudd's paper (2009), in order for any two constructs to be discriminant valid, the average of AVE (average amount of variance) of both factors need to be larger than the shared variance (square of the correlation) between A and B. As a result, the following table was drawn to compare these values:
+
+``` {R echo = F, warning = F, fig.width = 7}
+
+rel <- reliability(cfa.fit2)
+col <- inspect(cfa.fit2, "cov.lv")
+table <- data.frame(Variable = c("AVEVAR of Thurstone", "AVEVAR of Likert", "AVEVAR of Guttman", "Thurstone_Likert", "Thurstone_Guttman", "Likert_Guttman"), 
+                    Value = c(rel[20], rel[25], rel[30], col[5, 4], col[6, 4], col[6, 5]))
+
+pander(table)
+
+```
+
+The table suggests that there is discriminant validity between all of the three method factors in our model.
+
+## Conclusion
+
+Our study suggests that with Ostrom's dataset, even though both attitude-only model and attitude-method model could explain the data well, the first model might be the better one, despite of the fact that this difference might be just coincidental. 
+
+Moreover, there is discriminant validity between all of the three method factors.
+
+## Reference
+
+Farrell, A. M., & Rudd, J. M. (2009). Factor analysis and discriminant validity: A brief review of some practical issues. Anzmac. Retrieved from http://eprints.aston.ac.uk/7644/
+
+Ostrom, T. M. (1969). The relationship between the affective, behavioral, and cognitive components of attitude. Journal of Experimental Social Psychology, 5(1), 12–30. http://doi.org/10.1016/0022-1031(69)90003-1
+
