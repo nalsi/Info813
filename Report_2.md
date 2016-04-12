@@ -539,9 +539,9 @@ the summary of this model:
     ##     Guttman           1.000
 
 In order to compare these two models, an ANOVA test was conducted as
-below. It is worth noting that despite of the difference in AIC and BIC
-among these two models, the negative result indicated that this
-comparison is not meaningful.
+below. It is worth noting that despite of the much higher Chi-square
+value of the initial model, the very high p-value suggests that there
+might be no significant difference between the two models.
 
     ## Chi Square Difference Test
     ## 
