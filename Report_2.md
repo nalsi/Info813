@@ -1,5 +1,5 @@
-Info813 report week 2: Confirmatory analysis on attitude
-========================================================
+Info813 report week 2: Confirmatory factor analysis on attitude
+===============================================================
 
 Problem statement
 -----------------

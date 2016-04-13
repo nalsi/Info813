@@ -22,7 +22,7 @@ rownames(output) <- c("item1", "item2", "item3", "item4", "item5", "item6", "ite
 
 ```
 
-# Info813 report week 2: Confirmatory analysis on attitude
+# Info813 report week 2: Confirmatory factor analysis on attitude
 
 ## Problem statement
 
