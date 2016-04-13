@@ -6,12 +6,12 @@ Problem statement
 
 The following questions will be answered in the report:
 
-1.  If the three-factor model of attitude is adequate to explain the
+1.  Is the three-factor model of attitude adequate to explain the
     pattern of correlation observed in the data?
-2.  If the first model combined with the method factors is a better
-    model than the original model?
-3.  How should the discriminant of the three factors in section 2 be
-    evaluated?
+2.  Is the first model combined with the method factors a better model
+    than the original model?
+3.  How should the discriminant validity of the three method factors in
+    section 2 be evaluated?
 
 Data description
 ----------------
