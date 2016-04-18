@@ -1,0 +1,175 @@
+---
+title: "Info813_report_week3"
+author: "Kai Li"
+date: "April 16, 2016"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+
+library(foreign)
+library(cluster)
+library(fpc)
+library(clValid)
+library(pander)
+
+data <- read.spss("org_dissim.sav")
+output <- matrix(unlist(data), ncol = 31)
+colnames(output) <- c("", "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9", "o10", "o11", "o12", "o13", "o14", "o15", "o16", "o17", "o18", "o19", "o20", "o21", "o22", "o23", "o24", "o25", "o26", "o27", "o28", "o29", "o30") 
+output <- output[,-1]
+
+```
+
+# Info813 report week 3: Cluster analysis on dissmilarities among organizations
+
+## Question statement
+
+1. What cluster method would you use to analyze the data?
+2. Interpret the result.
+
+## Data description
+
+The data was claimed to be collected by John Johns about the dissimilarities of 30 different organizations. Informants were asked to rate the dissimilarities of a pair of organization. The dataset is a symmetric 30 x 30 dissimilarity matrix, a part of which is presented below.
+
+``` {R}
+
+output[1:5, 1:5]
+
+```
+
+## Research method
+
+Agglomerative and partitioning clustering methods were used in this report. The clustering methods were also evaluated.
+
+In order to determine the modality of the dataset, a scatter plot matrix was plotted below. Because of the large number of variables in the dataset, 30 observations are split into 6 groups to compare with each other. For the sake of simplicity, only the first group of scatter plot was presented. In sum, there doesn't seem to be strong unimodality in this dataset.
+
+``` {R fig.width = 7, fig.height = 5, echo = F, warning = F}
+
+pairs(~o1 + o2 + o3 + o4 + o5, data= output)
+
+```
+
+A heatmap based on the dataset was plotted below. Disregarding the dendrogram, there seems to be three clusters in this dataset.
+
+``` {R fig.width = 7, fig.height = 5, echo = F, warning = F}
+
+heatmap(output)
+
+```
+
+All the distances were calculated using Euclidean method.
+
+``` {R echo = F, warning = F}
+
+org.dist <- dist(output, method = "euclidean")
+
+```
+
+## Results
+
+#### Agglomerative clustering
+
+The dendrogram of the dataset using Euclidean method was plotted below. Combining with the heatmap shown above, three major clusters seem to best describe the dataset.
+
+``` {R fig.width = 7, fig.height = 5, echo = F, warning = F}
+
+## Agglomerative
+
+org.hclust = hclust(org.dist)
+plot(org.hclust)
+rect.hclust(org.hclust, k = 3)
+
+```
+
+However, two-cluster solution could also work on a different level.
+
+``` {R fig.width = 7, fig.height = 5, echo = F, warning = F}
+
+## Agglomerative
+
+org.hclust = hclust(org.dist)
+plot(org.hclust)
+rect.hclust(org.hclust, k = 2)
+
+```
+
+#### Partitioning
+
+Following what we have known, a K-mean method was used with K = 3. Below is the result. It is not surprising that all the observations were classified into the same group with these two methods.
+
+``` {R fig.width = 7, fig.height = 10, echo = F, warning = F}
+
+## Partitioning
+
+par(mfrow = c(2,1))
+fit <- kmeans(output, 3)
+fit_2 <- kmeans(output, 2)
+clusplot(output, fit$cluster, main = "K-mean plot with 3 clusters")
+clusplot(output, fit_2$cluster, main = "K-mean plot with 2 clusters")
+
+```
+
+#### Evaluation of the results
+
+In order to determine if the 3-cluster solution is significantly better than the 2-cluster solution (and 4-cluster and 5-cluster solutions), pseudo-F statistic was calculated below. Because the 3-cluster solution's pseudo-F value is much higher than 2-cluster solution, it could support the conclusion that 3-cluster solution is a better one, at least in terms of the within-group heterogeneity.
+
+``` {R echo = F, warning = F}
+
+group_3 <- cutree(org.hclust, 3)
+group_2 <- cutree(org.hclust, 2)
+group_4 <- cutree(org.hclust, 4)
+group_5 <- cutree(org.hclust, 5)
+
+f_3 <- calinhara(org.dist, group_3)
+f_2 <- calinhara(org.dist, group_2)
+f_4 <- calinhara(org.dist, group_4)
+f_5 <- calinhara(org.dist, group_5)
+
+f_table <- data.frame(c("2-cluster", "3-cluster", "4-cluster", "5-cluster"), c(f_2, f_3, f_4, f_5))
+colnames(f_table) <- c("Solution", "pseudo-F value")
+pander(f_table)
+
+```
+
+Moreover, Silhouette average values were used to evaluate the results 2 to 5-cluster solutions. Below is the Silhouette plot for 3-cluster solution.
+
+``` {R echo = F, warning = F, fig.width = 7, fig.height = 8}
+
+pam.3 <- pam(output, k = 3)
+plot(pam.3, main = "Silhouette plot for 3-cluster solution")
+
+```
+
+In Silhouette plot, the higher the average silhouette width is, the better all the objects lie within each cluster, a concept that is similar with pseudo-F value. According to the results, 3-cluster solution, again, is the better one, even though the difference is marginal.
+
+``` {R echo = F, warning = F}
+
+## PAM cluster
+
+result <- pamk(output, krange = 2:5)
+
+sil_table <- data.frame(c("2-cluster", "3-cluster", "4-cluster", "5-cluster"), c(result$crit[2], result$crit[3], result$crit[4], result$crit[5]))
+colnames(sil_table) <- c("Solution", "Average sihouette width")
+pander(sil_table)
+
+```
+
+Another validation method is to compare the between sum of squares / total sum of squares, which the percentage of total variance that is explained by the cluster. Below is the summary of this number from 2 to 5-cluster solutions.
+
+``` {R echo = F, warning = F}
+
+fit.4 <- kmeans(output, 4)
+fit.5 <- kmeans(output, 5)
+
+stat_table <- data.frame(c("2-cluster", "3-cluster", "4-cluster", "5-cluster"),
+                         c(fit_2$betweenss / fit_2$totss, fit$betweenss / fit$totss, fit.4$betweenss / fit.4$totss, fit.5$betweenss / fit.5$totss))
+colnames(stat_table) <- c("Solution", "Percentage of total variance")
+pander(stat_table)
+
+```
+
+## Conclusion
+
+It is shown by this report that in terms of this dataset, agglomerative and partitioning methods do not make much difference. Pretty much identical results were generated using these two methods.
+
+What matters is the number of clusters. By ignoring an obvious cluster, the 2-cluster solution has about the same level of withinness than other solutions, but a much lower level of betweenness. However, the best solution, the 3-cluster solution, doesn't have significant difference from 4- and 5-cluster solutions.
