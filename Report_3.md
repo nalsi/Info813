@@ -33,10 +33,8 @@ report. The clustering methods were also evaluated.
 
 In order to determine the modality of the dataset, a scatter plot matrix
 was plotted below. Because of the large number of variables in the
-dataset, 30 observations are split into 6 groups to compare with each
-other. For the sake of simplicity, only the first group of scatter plot
-was presented. In sum, there doesn't seem to be strong unimodality in
-this dataset.
+dataset, only a part of the scatter plots was presented. In sum, there
+doesn't seem to be strong unimodality in this dataset.
 
 ![](Report_3_files/figure-markdown_strict/unnamed-chunk-2-1.png)<!-- -->
 
@@ -53,8 +51,8 @@ Results
 #### Agglomerative clustering
 
 The dendrogram of the dataset using Euclidean method was plotted below.
-Combining with the heatmap shown above, three major clusters seem to
-best describe the dataset.
+Combining with the heatmap shown above, the three-cluster solution seems
+to best describe the dataset.
 
 ![](Report_3_files/figure-markdown_strict/unnamed-chunk-5-1.png)<!-- -->
 
@@ -64,9 +62,11 @@ However, two-cluster solution could also work on a different level.
 
 #### Partitioning
 
-Following what we have known, a K-mean method was used with K = 3. Below
-is the result. It is not surprising that all the observations were
-classified into the same group with these two methods.
+Following what we have known, a K-mean method was used with K = 3. And
+as comparison, the K-mean plot with K = 2 was plotted below. Below is
+the result. It is not surprising that all the observations were
+classified into the same group with agglomerative and partitioning
+methods.
 
 ![](Report_3_files/figure-markdown_strict/unnamed-chunk-7-1.png)<!-- -->
 
@@ -110,17 +110,52 @@ least in terms of the within-group heterogeneity.
 </tbody>
 </table>
 
-Moreover, Silhouette average values were used to evaluate the results 2
-to 5-cluster solutions. Below is the Silhouette plot for 3-cluster
-solution.
+Another validation method about betweenness is to compare the between
+sum of squares / total sum of squares, which the percentage of total
+variance that is explained by the cluster. Below is the summary of this
+number from 2 to 5-cluster solutions.
 
-![](Report_3_files/figure-markdown_strict/unnamed-chunk-9-1.png)<!-- -->![](Report_3_files/figure-markdown_strict/unnamed-chunk-9-2.png)<!-- -->
+<table style="width:57%;">
+<colgroup>
+<col width="15%" />
+<col width="41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Solution</th>
+<th align="center">Percentage of total variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2-cluster</td>
+<td align="center">0.6454</td>
+</tr>
+<tr class="even">
+<td align="center">3-cluster</td>
+<td align="center">0.8594</td>
+</tr>
+<tr class="odd">
+<td align="center">4-cluster</td>
+<td align="center">0.8894</td>
+</tr>
+<tr class="even">
+<td align="center">5-cluster</td>
+<td align="center">0.9036</td>
+</tr>
+</tbody>
+</table>
+
+In terms of the withinness of the clusters, Silhouette plot were used to
+evaluate the results 2 to 5-cluster solutions. Below is the Silhouette
+plot for 3-cluster solution.
+
+![](Report_3_files/figure-markdown_strict/unnamed-chunk-10-1.png)<!-- -->![](Report_3_files/figure-markdown_strict/unnamed-chunk-10-2.png)<!-- -->
 
 In Silhouette plot, the higher the average silhouette width is, the
-better all the objects lie within each cluster, a concept that is
-similar with pseudo-F value. According to the results, 3-cluster
-solution, again, is the better one, even though the difference is
-marginal.
+better all the objects lie within each cluster. According to the
+results, 3-cluster solution, again, is the better one, even though the
+difference is marginal.
 
 <table style="width:50%;">
 <colgroup>
@@ -153,42 +188,6 @@ marginal.
 </tbody>
 </table>
 
-Another validation method is to compare the between sum of squares /
-total sum of squares, which the percentage of total variance that is
-explained by the cluster. Below is the summary of this number from 2 to
-5-cluster solutions.
-
-<table style="width:57%;">
-<colgroup>
-<col width="15%" />
-<col width="41%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Solution</th>
-<th align="center">Percentage of total variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">2-cluster</td>
-<td align="center">0.6454</td>
-</tr>
-<tr class="even">
-<td align="center">3-cluster</td>
-<td align="center">0.8594</td>
-</tr>
-<tr class="odd">
-<td align="center">4-cluster</td>
-<td align="center">0.8898</td>
-</tr>
-<tr class="even">
-<td align="center">5-cluster</td>
-<td align="center">0.8997</td>
-</tr>
-</tbody>
-</table>
-
 Conclusion
 ----------
 
@@ -197,7 +196,7 @@ and partitioning methods do not make much difference. Pretty much
 identical results were generated using these two methods.
 
 What matters is the number of clusters. By ignoring an obvious cluster,
-the 2-cluster solution has about the same level of withinness than other
+the 2-cluster solution has about the same level of withinness from other
 solutions, but a much lower level of betweenness. However, the best
 solution, the 3-cluster solution, doesn't have significant difference
-from 4- and 5-cluster solutions.
+from 4- and 5-cluster solutions in both withinness and betweenness.
