@@ -29,7 +29,7 @@ output <- output[,-1]
 
 ## Data description
 
-The data was claimed to be collected by John Johns about the dissimilarities of 30 different organizations. Informants were asked to rate the dissimilarities of a pair of organization. The dataset is a symmetric 30 x 30 dissimilarity matrix, a part of which is presented below.
+The data was claimed to be collected by John Johns about the dissimilarities among 30 different organizations. Informants were asked to rate the dissimilarities of a pair of organization. The dataset is a symmetric 30 x 30 dissimilarity matrix, a part of which is presented below.
 
 ``` {R}
 

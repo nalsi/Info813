@@ -11,8 +11,8 @@ Data description
 ----------------
 
 The data was claimed to be collected by John Johns about the
-dissimilarities of 30 different organizations. Informants were asked to
-rate the dissimilarities of a pair of organization. The dataset is a
+dissimilarities among 30 different organizations. Informants were asked
+to rate the dissimilarities of a pair of organization. The dataset is a
 symmetric 30 x 30 dissimilarity matrix, a part of which is presented
 below.
 
@@ -137,11 +137,11 @@ number from 2 to 5-cluster solutions.
 </tr>
 <tr class="odd">
 <td align="center">4-cluster</td>
-<td align="center">0.8894</td>
+<td align="center">0.8898</td>
 </tr>
 <tr class="even">
 <td align="center">5-cluster</td>
-<td align="center">0.9036</td>
+<td align="center">0.896</td>
 </tr>
 </tbody>
 </table>
