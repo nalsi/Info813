@@ -111,7 +111,7 @@ clusplot(output, fit_2$cluster, main = "K-mean plot with 2 clusters")
 
 #### Evaluation of the results
 
-In order to determine if the 3-cluster solution is significantly better than the 2-cluster solution (and 4-cluster and 5-cluster solutions), pseudo-F statistic was calculated below. Because the 3-cluster solution's pseudo-F value is much higher than 2-cluster solution, it could support the conclusion that 3-cluster solution is a better one, at least in terms of the within-group heterogeneity.
+In order to determine if the 3-cluster solution is significantly better than the 2-cluster solution (and 4-cluster and 5-cluster solutions), pseudo-F statistic was calculated below. Because the 3-cluster solution's pseudo-F value is much higher than 2-cluster solution, it could support the conclusion that 3-cluster solution is a better one in terms of the within-group heterogeneity.
 
 ``` {R echo = F, warning = F}
 
@@ -128,20 +128,6 @@ f_5 <- calinhara(org.dist, group_5)
 f_table <- data.frame(c("2-cluster", "3-cluster", "4-cluster", "5-cluster"), c(f_2, f_3, f_4, f_5))
 colnames(f_table) <- c("Solution", "pseudo-F value")
 pander(f_table)
-
-```
-
-Another validation method about betweenness is to compare the between sum of squares / total sum of squares, which the percentage of total variance that is explained by the cluster. Below is the summary of this number from 2 to 5-cluster solutions.
-
-``` {R echo = F, warning = F}
-
-fit.4 <- kmeans(output, 4)
-fit.5 <- kmeans(output, 5)
-
-stat_table <- data.frame(c("2-cluster", "3-cluster", "4-cluster", "5-cluster"),
-                         c(fit_2$betweenss / fit_2$totss, fit$betweenss / fit$totss, fit.4$betweenss / fit.4$totss, fit.5$betweenss / fit.5$totss))
-colnames(stat_table) <- c("Solution", "Percentage of total variance")
-pander(stat_table)
 
 ```
 
@@ -165,6 +151,20 @@ result <- pamk(output, krange = 2:5)
 sil_table <- data.frame(c("2-cluster", "3-cluster", "4-cluster", "5-cluster"), c(result$crit[2], result$crit[3], result$crit[4], result$crit[5]))
 colnames(sil_table) <- c("Solution", "Average sihouette width")
 pander(sil_table)
+
+```
+
+A validation method about betweenness is to compare the between sum of squares / total sum of squares, which the percentage of total variance that is explained by the cluster. Below is the summary of this number from 2 to 5-cluster solutions.
+
+``` {R echo = F, warning = F}
+
+fit.4 <- kmeans(output, 4)
+fit.5 <- kmeans(output, 5)
+
+stat_table <- data.frame(c("2-cluster", "3-cluster", "4-cluster", "5-cluster"),
+                         c(fit_2$betweenss / fit_2$totss, fit$betweenss / fit$totss, fit.4$betweenss / fit.4$totss, fit.5$betweenss / fit.5$totss))
+colnames(stat_table) <- c("Solution", "Percentage of total variance")
+pander(stat_table)
 
 ```
 

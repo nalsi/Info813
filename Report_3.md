@@ -76,8 +76,8 @@ In order to determine if the 3-cluster solution is significantly better
 than the 2-cluster solution (and 4-cluster and 5-cluster solutions),
 pseudo-F statistic was calculated below. Because the 3-cluster
 solution's pseudo-F value is much higher than 2-cluster solution, it
-could support the conclusion that 3-cluster solution is a better one, at
-least in terms of the within-group heterogeneity.
+could support the conclusion that 3-cluster solution is a better one in
+terms of the within-group heterogeneity.
 
 <table style="width:38%;">
 <colgroup>
@@ -110,47 +110,11 @@ least in terms of the within-group heterogeneity.
 </tbody>
 </table>
 
-Another validation method about betweenness is to compare the between
-sum of squares / total sum of squares, which the percentage of total
-variance that is explained by the cluster. Below is the summary of this
-number from 2 to 5-cluster solutions.
-
-<table style="width:57%;">
-<colgroup>
-<col width="15%" />
-<col width="41%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Solution</th>
-<th align="center">Percentage of total variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">2-cluster</td>
-<td align="center">0.6454</td>
-</tr>
-<tr class="even">
-<td align="center">3-cluster</td>
-<td align="center">0.8594</td>
-</tr>
-<tr class="odd">
-<td align="center">4-cluster</td>
-<td align="center">0.8898</td>
-</tr>
-<tr class="even">
-<td align="center">5-cluster</td>
-<td align="center">0.896</td>
-</tr>
-</tbody>
-</table>
-
 In terms of the withinness of the clusters, Silhouette plot were used to
 evaluate the results 2 to 5-cluster solutions. Below is the Silhouette
 plot for 3-cluster solution.
 
-![](Report_3_files/figure-markdown_strict/unnamed-chunk-10-1.png)<!-- -->![](Report_3_files/figure-markdown_strict/unnamed-chunk-10-2.png)<!-- -->
+![](Report_3_files/figure-markdown_strict/unnamed-chunk-9-1.png)<!-- -->![](Report_3_files/figure-markdown_strict/unnamed-chunk-9-2.png)<!-- -->
 
 In Silhouette plot, the higher the average silhouette width is, the
 better all the objects lie within each cluster. According to the
@@ -184,6 +148,42 @@ difference is marginal.
 <tr class="even">
 <td align="center">5-cluster</td>
 <td align="center">0.5033</td>
+</tr>
+</tbody>
+</table>
+
+A validation method about betweenness is to compare the between sum of
+squares / total sum of squares, which the percentage of total variance
+that is explained by the cluster. Below is the summary of this number
+from 2 to 5-cluster solutions.
+
+<table style="width:57%;">
+<colgroup>
+<col width="15%" />
+<col width="41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Solution</th>
+<th align="center">Percentage of total variance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2-cluster</td>
+<td align="center">0.6454</td>
+</tr>
+<tr class="even">
+<td align="center">3-cluster</td>
+<td align="center">0.8594</td>
+</tr>
+<tr class="odd">
+<td align="center">4-cluster</td>
+<td align="center">0.8869</td>
+</tr>
+<tr class="even">
+<td align="center">5-cluster</td>
+<td align="center">0.9004</td>
 </tr>
 </tbody>
 </table>
