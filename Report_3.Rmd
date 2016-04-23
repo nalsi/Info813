@@ -75,7 +75,7 @@ The dendrogram of the dataset using Euclidean method was plotted below. Combinin
 
 ## Agglomerative
 
-org.hclust = hclust(org.dist)
+org.hclust = hclust(org.dist, method = "centroid")
 plot(org.hclust)
 rect.hclust(org.hclust, k = 3)
 
@@ -87,7 +87,7 @@ However, two-cluster solution could also work on a different level.
 
 ## Agglomerative
 
-org.hclust = hclust(org.dist)
+org.hclust = hclust(org.dist, method = "ward.D")
 plot(org.hclust)
 rect.hclust(org.hclust, k = 2)
 

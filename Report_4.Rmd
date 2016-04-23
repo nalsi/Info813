@@ -1,0 +1,92 @@
+---
+title: "Info813_report_week4"
+author: "Kai Li"
+date: "April 22, 2016"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+
+library(foreign)
+library(MASS)
+library(nFactors)
+library(vegan)
+library(psych)
+
+data <- read.spss("org_dissim.sav")
+output <- matrix(unlist(data), ncol = 31)
+colnames(output) <- c("", "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9", "o10", "o11", "o12", "o13", "o14", "o15", "o16", "o17", "o18", "o19", "o20", "o21", "o22", "o23", "o24", "o25", "o26", "o27", "o28", "o29", "o30") 
+output <- output[,-1]
+d <- dist(output) # Use Euclidean distance
+
+```
+
+# Info813 report week 4: MDS analysis on dissmilarities among organizations
+
+## Problem statement
+
+1. What scaling method would you use to analyze the data?
+2. How to interprete the data and the results?
+
+## Data description
+
+The data was claimed to be collected by John Johns about the dissimilarities among 30 different organizations. Informants were asked to rate the dissimilarities of a pair of organization. For the sake of the study, it is assumed that all the informants are homogeneous. The dataset is a symmetric 30 x 30 dissimilarity matrix, a part of which is presented below. And after this step, all the distances were calculated using Euclidean method.
+
+``` {R}
+
+output[1:5, 1:5]
+
+```
+
+## Research method
+
+The choice of MDS method is highly reliant on the nature of the data, so the first decision to make is whether the data can be seen as interval/ratio, or just ordinal. Because both understandings seem to be reasonable, both **classical MDS method** and **nonmetric MDS method** are used in this report to compare the results.
+
+## Results
+
+#### Deciding the number of dimensions
+
+The scree plot using Principal Components Analysis method is plotted below. Package *Stats version 3.2.4* is used for this analysis. It seems that 2-dimention is the most reasonable solution based on the data.
+
+``` {R echo = F, warning = F, fig.width = 7, fig.height = 5}
+
+fit <- princomp(d, cor = T)
+plot(fit, type = "lines")
+
+```
+
+#### Classical MDS method
+
+Classical MDS method is used to analyze the data, using 2-dimensional solution. Package *Stats version 3.2.4* is used for this analysis. The goodness of fit of this solution is 0.93, which is very good.
+
+``` {R echo = F, warning = F, fig.width = 7, fig.height = 6}
+
+fit_cla <- cmdscale(d, k = 2, eig = T)
+x <- fit_cla$points[,1]
+y <- fit_cla$points[,2]
+plot(x, y, xlab = "Coordinate 1", ylab = "Coordinate 2", main = paste("Metric MDS plot, goodness of fit: ", round(fit_cla$GOF[1], digits = 4)))
+
+```
+
+#### Nonmetric MDS method
+
+Classical MDS method is used to analyze the data, using 2-dimensional solution. Package *MASS version 7.3-45* is used for this analysis. The result is largely similar with Classical MDS method. And the resulting STRESS value is 0.04.
+
+``` {R echo = F, warning = F, fig.width = 7, fig.height = 6}
+
+fit_non <- isoMDS(d, k = 2)
+x <- fit_non$points[,1]
+y <- fit_non$points[,2]
+plot(x, y, xlab = "Coordinate 1", ylab = "Coordinate 2", main = paste("Metric MDS plot, STRESS value: ", round(fit_non$stress / 100, digits = 4)))
+
+```
+
+## Conclusions
+
+Because little is know about the dataset and the organizations that were compared in the dataset, we cannot draw deeper conclusions about how the two dimensions can help to explain the institutions. However, it seems that using Metric or Nonmetric MDS methods doesn't really affect the results a lot, which could be because that there is a strong pattern that can be identified between all the observations, as presented in the heat map.
+
+``` {R echo = F, warning = F, fig.width = 7, fig.height = 6}
+
+heatmap(output)
+
+```
