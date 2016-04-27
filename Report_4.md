@@ -43,7 +43,9 @@ Results
 
 The scree plot using Principal Components Analysis method is plotted
 below. Package *Stats version 3.2.4* is used for this analysis. It seems
-that 2-dimention is the most reasonable solution based on the data.
+that 2-dimention is able to explain 95.8% of the variance in the
+dataset, so it's decided that 2-dimension solution is a good enough
+starting point.
 
 ![](Report_4_files/figure-markdown_strict/unnamed-chunk-2-1.png)<!-- -->
 
