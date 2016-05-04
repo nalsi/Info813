@@ -299,6 +299,14 @@ pandoc.table(accuracy.table, caption = "Table of accuracy rate comparison")
 
 ```
 
+The accuracy rate is based on the comparison between pre-determined classification and the predicted classification using the model. For the example, for the original model, the confusion table is as below. Each colume is the classification in the dataset, and each row is the predicted classification. 3 observations are classified differently based on our model.
+
+``` {R}
+
+table(lda.values_1$class, output$species)
+
+```
+
 ## Conclusions
 
 It can be concluded that even though the dataset might not be appropriate for discriminant analysis, the original model is quite accurate. And transforming the data doesn't help to increase the performance of the model.

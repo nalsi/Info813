@@ -352,6 +352,19 @@ accuracy rate, which is higher than that of model 2.
     ## 
     ## Table: Table of accuracy rate comparison
 
+The accuracy rate is based on the comparison between pre-determined
+classification and the predicted classification using the model. For the
+example, for the original model, the confusion table is as below. Each
+colume is the classification in the dataset, and each row is the
+predicted classification. 3 observations are classified differently
+based on our model.
+
+    ##    
+    ##      1  2  3
+    ##   1 50  0  0
+    ##   2  0 48  1
+    ##   3  0  2 49
+
 Conclusions
 -----------
 
