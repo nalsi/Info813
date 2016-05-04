@@ -1,0 +1,316 @@
+---
+title: "week5_DA"
+author: "Kai Li"
+date: "April 28, 2016"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F)
+
+library(foreign)
+library(MASS)
+library(psych)
+library(MVT)
+library(MVN)
+library(rrcov)
+library(Hotelling)
+library(pander)
+library(car)
+library(GGally)
+
+data <- read.spss("iris.sav")
+output <- as.data.frame(data)
+colnames(output) <- c("species", "sepal_length", "sepal_width", "petal_length", "petal_width")
+output$species <- as.factor(output$species)
+
+```
+
+# Info813 report week 5: Discriminant analysis on iris
+
+## Problem statement
+
+Two questions will be answered in this report:
+
+1. Do the three species differ with respect to the four characteristics collected?
+2. How well is the model between the specimen and their attributes?
+
+## Data description
+
+Iris dataset collected by Fisher is used, including 150 observations of iris concerning the following 4 variables:
+
+- Length of sepal
+- Width of sepal
+- Length of petal
+- Width of petal
+
+![](https://raw.githubusercontent.com/nalsi/Info813/master/perianth_segments2.jpg)
+
+The observations are composed of 50 observations in each of the three species. No name of the species is specified in the dataset.
+
+Below is the head of this dataset.
+
+``` {R}
+
+head(output)
+
+```
+
+## Research method
+
+Linear discriminant analysis method and a set of R packages connected with this method are used in this report.
+
+## Results
+
+#### Distances between iris categories
+
+The distance between the three categories in the dataset can be best presented by the scatterplot matrices, which is plotted below. Blue dots belong to catetory 1, red 2, and black 3. It is shown by this plot that group 1 is almost always different than the other two groups on any combination of two variables. Category 2 and 3 have strong similarities in the two sepal-related variables. (In the following chart, **blue** is group 1, **red** is group 2, and **black** is group 3.)
+
+``` {R fig.width = 7, fig.height = 7}
+
+cols <- character(nrow(output))
+cols[] <- "black"
+
+cols[output$species == "1"] <- "blue"
+cols[output$species == "2"] <- "red"
+pairs(output[,2:5], col=cols, cex.labels = 1)
+
+```
+
+#### Test of assumptions of the original dataset
+
+The following four assumptions of linear discriminant analysis are tested before the analysis:
+
+1. Outlier
+2. Homogeneity of variance
+3. Univariate normality
+4. Multivariate normality
+
+###### 1. Outliers
+
+According to the scatterplot matrice, there is no obvious outliers that can be identified in the dataset. Even though category 1 is relatively distant from the other two groups.
+
+###### 2. Homogeneity of variance
+
+Homogeneity of variance is tested using **test of variance homogeneity of correlated variances** that is included the MVT package (version 0.3). However, since the p-value approximates 0, the null hypothesis that the variances are homogeneous can be rejected. Thus, it could be a problem to conduct linear discriminant analysis method.
+
+``` {R}
+
+## Homogeneity test using MVT package
+sf <- studentFit(~ sepal_length + sepal_width + petal_length + petal_width, data = output)
+homogeneity.test(sf, test = "LRT", type = "scale")
+
+```
+
+###### 3. Univariate normality
+
+uniNorm function in MVN package (version 4.0) is used to test the univariate normality of the dataset. The core of this function are a descriptive analysis as well as the Shapiro-wilk's Normality test. According to the latter, all variables but sepal_width fail to pass this test.
+
+``` {R}
+
+##Univariate normality test using MVN package
+uniNorm(output[,2:5])
+
+```
+
+Among the four variables, two petal-related variables are highly unevenly distributed, as plotted in the histograms below:
+
+``` {R fig.width = 7, fig.height = 7}
+
+par(mfrow = c(2,2))
+
+hist(output[,2], main = "sepal_length", xlab = "sepal_length")
+hist(output[,3], main = "sepal_width", xlab = "sepal_width")
+hist(output[,4], main = "petal_length", xlab = "sepal_width")
+hist(output[,5], main = "petal_width", xlab = "sepal_width")
+
+```
+
+###### 4. Multivariate normality
+
+Mardia’s Multivariate Normality Test as included in the MVN package is used. Similarly, the multivariate normality test is not passed as well.
+
+``` {R}
+
+## Multivariant normality: Mardia’s Multivariate Normality Test
+mardiaTest(output[,2:5], cov = T, qqplot = F)
+
+```
+
+#### Transformed dataset and assumption test
+
+Two types of transformation were done to address to the problems identified above. First, to mitigate violation to the univariate normality, transformation was conducted to both petal-related variables using **the absolute value of the difference between observation and the mean value of the variable**, because of the bimodality in both variables. For the two sepal variables, **square root** is applied.
+
+``` {R echo = T}
+
+output$petal_length_tran <- abs(output$petal_length - mean(output$petal_length))
+
+```
+
+``` {R}
+
+## Individual variable data transformation
+
+output$sepal_length_trans <- sqrt(output$sepal_length)
+output$sepal_width_trans <- sqrt(output$sepal_width)
+output$petal_length_trans <- abs(output$petal_length - mean(output$petal_length))
+output$petal_width_trans <- abs(output$petal_width - mean(output$petal_width))
+
+```
+
+Moreover, after the first transformation, Box-Cox power transformation is applied to the transformed variables. The three sets of variables will be compared in the later sections.
+
+``` {R}
+
+summary(p1 <- powerTransform(cbind(sepal_length_trans, sepal_width_trans, petal_length_trans, petal_width_trans) ~ species, output))
+testTransform(p1, lambda = c(1, 1, 0.84, 0.71))
+trans <- bcPower(with(output, cbind(sepal_length, sepal_width, petal_length, petal_width)), coef(p1, round = T))
+trans <- data.frame(trans)
+output$sepal_length_bt <- trans[,1]
+output$sepal_width_bt <- trans[,2]
+output$petal_length_bt <- trans[,3]
+output$petal_width_bt <- trans[,4]
+
+```
+
+And then, the assumption tests were conducted again using the 2 sets of new variables.
+
+###### 1. Outliers
+
+Similar with the original data, no outlier is identified in the dataset.
+
+``` {R fig.width = 7, fig.height = 7}
+
+pairs(output[,6:9], cex.labels = 1)
+pairs(output[,10:13], cex.labels = 1)
+
+```
+
+###### 2. Homogeneity of variance
+
+However, even after both transformations, the variance still cannot pass the homogeneity test.
+
+``` {R}
+
+## Homogeneity test using MVT package
+sf <- studentFit(~ sepal_length_trans + sepal_width_trans + petal_length_trans + petal_width_trans, 
+                 data = output)
+sf_1 <- studentFit(~ sepal_length_bt + sepal_width_bt + petal_length_bt + petal_width_bt, 
+                 data = output)
+homogeneity.test(sf, test = "LRT", type = "scale")
+homogeneity.test(sf_1, test = "LRT", type = "scale")
+
+```
+
+###### 3. Univariate normality
+
+Similarly, the univariate normality test was also not passed by both sets of variables, even though the latter set got better results.
+
+``` {R}
+
+##Univariate normality test using MVN package
+uniNorm(output[,6:9])
+uniNorm(output[,10:13])
+
+```
+
+###### 4. Multivariate normality
+
+Last, Mardia’s Multivariate Normality Test was also not met by both sets of variables.
+
+``` {R}
+
+## Mardia’s Multivariate Normality Test
+mardiaTest(output[,2:5], cov = T, qqplot = F)
+mardiaTest(output[,2:5], cov = T, qqplot = F)
+
+```
+
+So even though eventually the dataset failed to pass the assumption test, the descriminant analysis was still conducted over the three sets of variables to compare the results. Even though there is a high risk that the results might not be accurate.
+
+#### Results
+
+Function "lda" was used in the "MASS" package to establish the linear discriminant analysis model. Two similar models were established using the two transformed set of variables.
+
+``` {R echo = T}
+
+lda.model_1 <- lda(species ~ sepal_length + sepal_width + petal_length + petal_width, 
+                   data = output, CV = T)
+
+```
+
+``` {R}
+
+lda.model_2 <- lda(species ~ sepal_length_trans + sepal_width_trans + petal_length_trans + petal_width_trans, 
+                   data = output, CV = T)
+
+lda.model_3 <- lda(species ~ sepal_length_bt + sepal_width_bt + petal_length_bt + petal_width_bt, 
+                   data = output, CV = T)
+
+```
+
+Below is the summary information of model 1. It shows the coefficients of the four variables on the two linear discriminants. It also suggests that the first linear discriminant can explain the majority of the variance in the data.
+
+``` {R}
+
+lda.model_1
+
+```
+
+Below is the scatterplot of the original dataset on the two linear discriminants.
+
+``` {R fig.width = 7, fig.height = 7}
+
+lda.model_1a <- lda(species ~ sepal_length + sepal_width + petal_length + petal_width, 
+                   data = output)
+lda.model_2a <- lda(species ~ sepal_length_trans + sepal_width_trans + petal_length_trans + petal_width_trans, 
+                   data = output)
+
+lda.model_3a <- lda(species ~ sepal_length_bt + sepal_width_bt + petal_length_bt + petal_width_bt, 
+                   data = output)
+
+lda.values_1 <- predict(lda.model_1a)
+apply(lda.values_1$posterior, MARGIN = 1, FUN = max)
+lda.values_2 <- predict(lda.model_2a)
+apply(lda.values_2$posterior, MARGIN = 1, FUN = max)
+lda.values_3 <- predict(lda.model_3a)
+apply(lda.values_3$posterior, MARGIN = 1, FUN = max)
+
+par(mfrow = c(2,2))
+
+plot(lda.model_1a, main = "model 1")
+plot(lda.model_2a, main = "model 2")
+plot(lda.model_3a, main = "model 3")
+
+```
+
+Another way to look at the distance between the three categories is through histogram on the linear discriminant. Below is the historgram of the three categories on the two discriminants base on model 1.
+
+``` {R}
+
+ldahist(data = lda.values_1$x[,1], g = output$species)
+ldahist(data = lda.values_1$x[,2], g = output$species)
+
+```
+
+Quite similar with the visual clue, model 1 and model 3 have the same accuracy rate, which is higher than that of model 2.
+
+``` {R}
+
+## accuracy rate
+ct_1 <- table(output$species, lda.model_1$class)
+ct_2 <- table(output$species, lda.model_2$class)
+ct_3 <- table(output$species, lda.model_3$class)
+
+accuracy.table <- data.frame(Model = c("model 1", "model 2", "model 3"),
+                             Accuracy = c(sum(diag(prop.table(ct_1))), sum(diag(prop.table(ct_2))), sum(diag(prop.table(ct_3)))))
+
+pandoc.table(accuracy.table, caption = "Table of accuracy rate comparison")
+
+```
+
+## Conclusions
+
+It can be concluded that even though the dataset might not be appropriate for discriminant analysis, the original model is quite accurate. And transforming the data doesn't help to increase the performance of the model.
+
+And group 2 and group 3 are more similar with each other than with group 1.
