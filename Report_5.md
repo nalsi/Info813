@@ -325,19 +325,28 @@ the two transformed set of variables.
     lda.model_1 <- lda(species ~ sepal_length + sepal_width + petal_length + petal_width, 
                        data = output, CV = T)
 
+Below are the coefficiencies of the independent variables on the two
+discriminants.
+
+    ##                     LD1         LD2
+    ## sepal_length  0.8293776  0.02410215
+    ## sepal_width   1.5344731  2.16452123
+    ## petal_length -2.2012117 -0.93192121
+    ## petal_width  -2.8104603  2.83918785
+
 Below is the scatterplot of the original dataset on the two linear
 discriminants.
 
-![](Report_5_files/figure-markdown_strict/unnamed-chunk-16-1.png)<!-- -->
+![](Report_5_files/figure-markdown_strict/unnamed-chunk-17-1.png)<!-- -->
 
 Another way to look at the distance between the three categories is
 through histogram on the linear discriminant. Below is the historgram of
 the three categories on the two discriminants base on model 1.
 
-![](Report_5_files/figure-markdown_strict/unnamed-chunk-17-1.png)<!-- -->![](Report_5_files/figure-markdown_strict/unnamed-chunk-17-2.png)<!-- -->
+![](Report_5_files/figure-markdown_strict/unnamed-chunk-18-1.png)<!-- -->![](Report_5_files/figure-markdown_strict/unnamed-chunk-18-2.png)<!-- -->
 
-Quite similar with the visual clue, model 1 and model 3 have the same
-accuracy rate, which is higher than that of model 2.
+It turns out thatl model 1 and model 3 have the same accuracy rate,
+which is higher than that of model 2.
 
     ## 
     ## ------------------

@@ -241,12 +241,6 @@ lda.model_2 <- lda(species ~ sepal_length_trans + sepal_width_trans + petal_leng
 lda.model_3 <- lda(species ~ sepal_length_bt + sepal_width_bt + petal_length_bt + petal_width_bt, 
                    data = output, CV = T)
 
-```
-
-Below is the scatterplot of the original dataset on the two linear discriminants.
-
-``` {R include = F}
-
 lda.model_1a <- lda(species ~ sepal_length + sepal_width + petal_length + petal_width, 
                    data = output)
 lda.model_2a <- lda(species ~ sepal_length_trans + sepal_width_trans + petal_length_trans + petal_width_trans, 
@@ -254,6 +248,20 @@ lda.model_2a <- lda(species ~ sepal_length_trans + sepal_width_trans + petal_len
 
 lda.model_3a <- lda(species ~ sepal_length_bt + sepal_width_bt + petal_length_bt + petal_width_bt, 
                    data = output)
+
+```
+
+Below are the coefficiencies of the independent variables on the two discriminants.
+
+``` {R}
+
+lda.model_1a$scaling
+
+```
+
+Below is the scatterplot of the original dataset on the two linear discriminants.
+
+``` {R include = F}
 
 lda.values_1 <- predict(lda.model_1a)
 apply(lda.values_1$posterior, MARGIN = 1, FUN = max)
@@ -283,7 +291,7 @@ ldahist(data = lda.values_1$x[,2], g = output$species)
 
 ```
 
-Quite similar with the visual clue, model 1 and model 3 have the same accuracy rate, which is higher than that of model 2.
+It turns out thatl model 1 and model 3 have the same accuracy rate, which is higher than that of model 2.
 
 ``` {R}
 
