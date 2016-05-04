@@ -243,17 +243,9 @@ lda.model_3 <- lda(species ~ sepal_length_bt + sepal_width_bt + petal_length_bt 
 
 ```
 
-Below is the summary information of model 1. It shows the coefficients of the four variables on the two linear discriminants. It also suggests that the first linear discriminant can explain the majority of the variance in the data.
-
-``` {R}
-
-lda.model_1
-
-```
-
 Below is the scatterplot of the original dataset on the two linear discriminants.
 
-``` {R fig.width = 7, fig.height = 7}
+``` {R include = F}
 
 lda.model_1a <- lda(species ~ sepal_length + sepal_width + petal_length + petal_width, 
                    data = output)
@@ -269,6 +261,10 @@ lda.values_2 <- predict(lda.model_2a)
 apply(lda.values_2$posterior, MARGIN = 1, FUN = max)
 lda.values_3 <- predict(lda.model_3a)
 apply(lda.values_3$posterior, MARGIN = 1, FUN = max)
+
+```
+
+``` {R fig.width = 7, fig.height = 7}
 
 par(mfrow = c(2,2))
 
