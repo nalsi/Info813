@@ -141,12 +141,6 @@ mardiaTest(output[,2:5], cov = T, qqplot = F)
 
 Two types of transformation were done to address to the problems identified above. First, to mitigate violation to the univariate normality, transformation was conducted to both petal-related variables using **the absolute value of the difference between observation and the mean value of the variable**, because of the bimodality in both variables. For the two sepal variables, **square root** is applied.
 
-``` {R echo = T}
-
-output$petal_length_tran <- abs(output$petal_length - mean(output$petal_length))
-
-```
-
 ``` {R}
 
 ## Individual variable data transformation

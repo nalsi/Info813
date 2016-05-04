@@ -154,8 +154,6 @@ using **the absolute value of the difference between observation and the
 mean value of the variable**, because of the bimodality in both
 variables. For the two sepal variables, **square root** is applied.
 
-    output$petal_length_tran <- abs(output$petal_length - mean(output$petal_length))
-
 Moreover, after the first transformation, Box-Cox power transformation
 is applied to the transformed variables. The three sets of variables
 will be compared in the later sections.
@@ -184,7 +182,7 @@ new variables.
 
 Similar with the original data, no outlier is identified in the dataset.
 
-![](Report_5_files/figure-markdown_strict/unnamed-chunk-10-1.png)<!-- -->![](Report_5_files/figure-markdown_strict/unnamed-chunk-10-2.png)<!-- -->
+![](Report_5_files/figure-markdown_strict/unnamed-chunk-9-1.png)<!-- -->![](Report_5_files/figure-markdown_strict/unnamed-chunk-9-2.png)<!-- -->
 
 ###### 2. Homogeneity of variance
 
@@ -236,41 +234,41 @@ sets of variables, even though the latter set got better results.
 
     ## $`Descriptive Statistics`
     ##                      n  Mean Std.Dev Median   Min   Max  25th  75th   Skew
-    ## petal_length_tran  150 1.563   0.811  1.792 0.042 3.142 0.842 2.258 -0.278
     ## sepal_length_trans 150 2.411   0.171  2.408 2.074 2.811 2.258 2.530  0.174
     ## sepal_width_trans  150 1.744   0.124  1.732 1.414 2.098 1.673 1.817  0.096
     ## petal_length_trans 150 1.563   0.811  1.792 0.042 3.142 0.842 2.258 -0.278
+    ## petal_width_trans  150 0.658   0.381  0.799 0.001 1.301 0.301 0.999 -0.287
     ##                    Kurtosis
-    ## petal_length_tran    -1.236
     ## sepal_length_trans   -0.718
     ## sepal_width_trans     0.028
     ## petal_length_trans   -1.236
+    ## petal_width_trans    -1.379
     ## 
     ## $`Shapiro-Wilk's Normality Test`
     ##             Variable Statistic   p-value Normality
-    ## 1 petal_length_tran     0.9304    0.0000    NO    
-    ## 2 sepal_length_trans    0.9806    0.0328    NO    
-    ## 3 sepal_width_trans     0.9896    0.3355    YES   
-    ## 4 petal_length_trans    0.9304    0.0000    NO
+    ## 1 sepal_length_trans    0.9806    0.0328    NO    
+    ## 2 sepal_width_trans     0.9896    0.3355    YES   
+    ## 3 petal_length_trans    0.9304    0.0000    NO    
+    ## 4 petal_width_trans     0.9011    0.0000    NO
 
     ## $`Descriptive Statistics`
-    ##                     n  Mean Std.Dev Median   Min   Max  25th  75th   Skew
-    ## petal_width_trans 150 0.658   0.381  0.799 0.001 1.301 0.301 0.999 -0.287
-    ## sepal_length_bt   150 4.843   0.828  4.800 3.300 6.900 4.100 5.400  0.309
-    ## sepal_width_bt    150 2.057   0.436  2.000 1.000 3.400 1.800 2.300  0.313
-    ## petal_length_bt   150 2.373   1.467  2.908 0.000 4.853 0.577 3.496 -0.327
-    ##                   Kurtosis
-    ## petal_width_trans   -1.379
-    ## sepal_length_bt     -0.606
-    ## sepal_width_bt       0.139
-    ## petal_length_bt     -1.436
+    ##                   n  Mean Std.Dev Median    Min   Max   25th  75th   Skew
+    ## sepal_length_bt 150 4.843   0.828  4.800  3.300 6.900  4.100 5.400  0.309
+    ## sepal_width_bt  150 2.057   0.436  2.000  1.000 3.400  1.800 2.300  0.313
+    ## petal_length_bt 150 2.373   1.467  2.908  0.000 4.853  0.577 3.496 -0.327
+    ## petal_width_bt  150 0.108   0.778  0.288 -1.133 1.292 -0.809 0.730 -0.294
+    ##                 Kurtosis
+    ## sepal_length_bt   -0.606
+    ## sepal_width_bt     0.139
+    ## petal_length_bt   -1.436
+    ## petal_width_bt    -1.388
     ## 
     ## $`Shapiro-Wilk's Normality Test`
-    ##            Variable Statistic   p-value Normality
-    ## 1 petal_width_trans    0.9011    0.0000    NO    
-    ## 2  sepal_length_bt     0.9761    0.0102    NO    
-    ## 3  sepal_width_bt      0.9849    0.1012    YES   
-    ## 4  petal_length_bt     0.8677    0.0000    NO
+    ##          Variable Statistic   p-value Normality
+    ## 1 sepal_length_bt    0.9761    0.0102    NO    
+    ## 2 sepal_width_bt     0.9849    0.1012    YES   
+    ## 3 petal_length_bt    0.8677    0.0000    NO    
+    ## 4 petal_width_bt     0.8862    0.0000    NO
 
 ###### 4. Multivariate normality
 
@@ -665,13 +663,13 @@ discriminants.
     ##       148       149       150 
     ## 0.9945982 0.9999482 0.9822313
 
-![](Report_5_files/figure-markdown_strict/unnamed-chunk-17-1.png)<!-- -->
+![](Report_5_files/figure-markdown_strict/unnamed-chunk-16-1.png)<!-- -->
 
 Another way to look at the distance between the three categories is
 through histogram on the linear discriminant. Below is the historgram of
 the three categories on the two discriminants base on model 1.
 
-![](Report_5_files/figure-markdown_strict/unnamed-chunk-18-1.png)<!-- -->![](Report_5_files/figure-markdown_strict/unnamed-chunk-18-2.png)<!-- -->
+![](Report_5_files/figure-markdown_strict/unnamed-chunk-17-1.png)<!-- -->![](Report_5_files/figure-markdown_strict/unnamed-chunk-17-2.png)<!-- -->
 
 Quite similar with the visual clue, model 1 and model 3 have the same
 accuracy rate, which is higher than that of model 2.
