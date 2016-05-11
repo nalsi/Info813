@@ -144,7 +144,7 @@ cramer_table
 
 #### Model performance
 
-The rejection of the IIA hypothesis, and the fact that the three selections in the dataset can be combined together suggest that a nested model is a better choice. So a nested logit model is established. Package mlogit makes the distinction between alternative/individual variables. There are three sections in the model using this package, the first and third sections contain alternative variables (with and without specific coefficient, respectively), and the second section contains individual variables. In this case, all the independent variables are individual variables rather than choice variables. The method of this report is called "multinominal logit model" in the sense that all the independent variables are individual variables.
+The rejection of the IIA hypothesis, and the fact that the three selections in the dataset can be combined together suggest that a nested model is a better choice. So a nested logit model is established. Package mlogit makes the distinction between alternative/individual variables. There are three sections in the model using this package, the first and third sections contain alternative variables (with and without specific coefficient, respectively), and the second section contains individual variables. In this case, all the independent variables are individual variables rather than choice variables.
 
 ``` {R echo = T}
 

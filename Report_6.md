@@ -271,9 +271,7 @@ variables. There are three sections in the model using this package, the
 first and third sections contain alternative variables (with and without
 specific coefficient, respectively), and the second section contains
 individual variables. In this case, all the independent variables are
-individual variables rather than choice variables. The method of this
-report is called "multinominal logit model" in the sense that all the
-independent variables are individual variables.
+individual variables rather than choice variables.
 
     model_1 <- mlogit(method ~ 0 | age + religion + education_w + education_h + working + media,
                     data = mldata,
@@ -365,7 +363,7 @@ choices as compared with choice 3 (short-term method).
     ## 0.22607 0.42702 0.34691 
     ## 
     ## bfgs method
-    ## 29 iterations, 0h:0m:2s 
+    ## 29 iterations, 0h:0m:1s 
     ## g'(-H)^-1g =  11.3 
     ## last step couldn't find higher value 
     ## 
