@@ -113,7 +113,7 @@ Below is the head of this dataset.
     ## 5     0      1
     ## 6     0      1
 
-Ane below is a summary of the dataset by the dependent variable.
+Abe below is a summary of the dataset by the dependent variable.
 
     ## group: 1
     ##              vars   n  mean   sd median trimmed   mad min max range  skew
@@ -291,7 +291,7 @@ validity of the nest.
 
 The strongest independent variable when comparing choice 1 and choices 2
 and 3 is **women's education**, it has an obvious positive impact on the
-women's choices, judged by the increasing coefficients when the level of
+woman's choices, judged by the increasing coefficients when the level of
 education increases. However, education doesn't make women more likely
 to choose short-term methods. **Media exposure** (which is in a
 different order from other independent variables) and **working status**
@@ -350,7 +350,7 @@ the data.)
 
 Below is the same model using choice 2 (long-term method) as the
 reference level. It is shown in the results below that none of the
-independent variable actually has significant impact on the women's
+independent variable actually has significant impact on the woman's
 choices as compared with choice 3 (short-term method).
 
     ## 
@@ -546,12 +546,12 @@ Conclusions
 -----------
 
 According to our analysis, depending on the model established, different
-independent variables can be related with women's decisions to adopt
+independent variables can be related with woman's decisions to adopt
 contraceptive methods, but the level of education women receive seems to
 be the strongest one that explains.
 
 Besides other factors, number of children seems to be another strong
-factor connected with women's decisions to adopte both long-term and
+factor connected with woman's decisions to adopt both long-term and
 short-term methods. And the resulting model is significantly better than
 the models without this variable.
 
