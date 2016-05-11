@@ -2,7 +2,7 @@
 title: "Report_6"
 author: "Kai Li"
 date: "May 4, 2016"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
@@ -11,10 +11,52 @@ knitr::opts_chunk$set(echo = TRUE)
 library(foreign)
 library(psych)
 library(mlogit)
+library(IndependenceTests)
+library(car)
+library(lsr)
 
 data <- read.table("cmc.data.txt", sep = ",")
 output <- as.data.frame(data)
 colnames(output) <- c("age", "education_w", "education_h", "child", "religion", "working", "occupation_h", "SII", "media", "method")
+
+```
+
+# Info813 Report 6: logit choice model
+
+## Problem statement
+
+## Data description
+
+The dataset is about the choices of contraception measures by married women in Indonesia and other social profiles of them and their families. It is a subset of the 1987 National Indonesia Contraceptive Prevalence Survey, when the data were collected through interview method. The dataset is available in [Machine Learning Repository at University of California, Irvine](http://archive.ics.uci.edu/ml/datasets/Contraceptive+Method+Choice). (Lichman, 2013)
+
+The dataset is composed of 10 variables of 1,473 observations. The 10 variables include:
+
+Variable | name in the dataset | Type of data | Values
+---------|---------------------|--------------|--------
+1. Wife's age                    | age | numerical |
+2. Wife's education              | education_w | categorical | 1=low, 2, 3, 4=high
+3. Husband's education           | education_h | categorical | 1=low, 2, 3, 4=high
+4. Number of children ever born  | child | numerical |
+5. Wife's religion               | religion | categorical | 0=Non-Islam, 1=Islam
+6. Wife's now working?           | working | categorical | 0=Yes, 1=No
+7. Husband's occupation          | occupation_h | categorical | 1, 2, 3, 4
+8. Standard-of-living index      | SII | categorical | 1=low, 2, 3, 4=high
+9. Media exposure                | media | categorical | 0=Good, 1=Not good
+**10. Contraceptive method used**    | method | categorical | 1=No-use, 2=Long-term, 3=Short-term
+
+Below is the head of this dataset.
+
+``` {R}
+
+head(output)
+
+```
+
+Ane below is a summary of the dataset by the dependent variable.
+
+``` {R}
+
+describeBy(output, group = output$method)
 
 output[,2] <- as.factor(output[,2])
 output[,3] <- as.factor(output[,3])
@@ -24,8 +66,40 @@ output[,7] <- as.factor(output[,7])
 output[,8] <- as.factor(output[,8])
 output[,9] <- as.factor(output[,9])
 output[,10] <- as.factor(output[,10])
+output$child <- as.numeric(output$child)
 
 ```
+
+## Research method
+
+Multinominal logit model is used to finish this report, by using package *mlogit* (version 0.2-4) of R.
+
+## Results
+
+#### Assumptions
+
+The following assumptions are tested for multinominal logistic regression test:
+
+1. Independence of observations
+2. No multicollinearity
+3. Independence of irrelevant alternatives
+
+###### Multicollinearity
+
+It seems that the multicollinearity hypothesis is met because the GVIF (generalized variance inflation factor) values of all the independent variables in the comprehensive model are lower than 3.
+
+``` {R}
+
+lm.model <- glm(method ~ age + child + religion + education_w + education_h + working + media,
+                data = output,
+                family=binomial(link="logit"))
+vif(lm.model)
+
+```
+
+###### Independence of irrelevant alternatives hypothesis
+
+However, the IIA hypothesis is not met using the comprehensive model and the model based on a subset of the data.  
 
 ``` {R}
 
@@ -33,39 +107,159 @@ mldata <- mlogit.data(data = output,
                       choice = "method", 
                       shape = "wide")
 
-model <- mlogit(method ~ 1 | age + child + religion + education_w + education_h + working + occupation_h,
+model <- mlogit(method ~ 1 | age + child + religion + education_w + education_h + working + media,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt")
+
+model_new <- mlogit(method ~ 1 | age + child + religion + education_w + education_h + working + media,
                 data = mldata,
                 shape = "long", 
                 alt.var = "alt",
-                alt.levels = c("No", "Long", "Short"),
-                reflevel = "No")
+                alt.subset = c("1", "2"))
 
-summary(model)
-
-model.2 <- mlogit(method ~ 1 | age + child + religion + education_w + education_h,
-                data = mldata,
-                shape = "long", 
-                alt.var = "alt",
-                alt.levels = c("No", "Long", "Short"),
-                reflevel = "No")
-
-summary(model.2)
+mlogit::hmftest(model, model_new)
 
 ```
+
+###### Correlation between independent variables
+
+It is not a part of the assumption test. But correlations between nominal variables are tested using Cramer's V test (using function cramersV from package **lsr** version 0.5). The results (some of which might be problematic) indicate that there might be a pretty strong correlation between the education levels of wife and husband. But all the other variables might just have relatively week correlation.
 
 ``` {R}
 
-library(mnlogit)
-
-fm <- formula(method ~ 1 | age + child + religion + education_w + education_h + working + occupation_h)
-model.1 <- mnlogit(fm, mldata, "alt")
-summary(model.1)
-
-fm.2 <- formula(method ~ 1 | age + child + religion + education_w + education_h)
-model.2 <- mnlogit(fm.2, mldata, "alt")
-summary(model.2)
+list <- c(2, 3, 5, 6, 7, 8, 9, 10)
+cramer_table <- data.frame()
+for (i in 1:length(list)) {
+  for  (j in 1:length(list)) {
+    cramer_table[i, j] <- cramersV(table(output[,list[i]], output[,list[j]]))
+    colnames(cramer_table)[i] <- colnames(output)[list[i]]
+    rownames(cramer_table)[i] <- colnames(output)[list[i]]
+  }
+}
+cramer_table <- round(cramer_table, digits = 2)
+cramer_table
 
 ```
 
-Data: http://archive.ics.uci.edu/ml/datasets/Contraceptive+Method+Choice
-Dict: http://archive.ics.uci.edu/ml/machine-learning-databases/cmc/cmc.names
+#### Model performance
+
+The rejection of the IIA hypothesis, and the fact that the three selections in the dataset can be combined together suggest that a nested model is a better choice. So a nested logit model is established. Package mlogit makes the distinction between alternative/individual variables. There are three sections in the model using this package, the first and third sections contain alternative variables (with and without specific coefficient, respectively), and the second section contains individual variables. In this case, all the independent variables are individual variables rather than choice variables. The method of this report is called "multinominal logit model" in the sense that all the independent variables are individual variables.
+
+``` {R echo = T}
+
+model_1 <- mlogit(method ~ 0 | age + religion + education_w + education_h + working + media,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt",
+                nests = list(positive = c("2", "3"), negative = c("1")),,
+                reflevel = "1",
+                un.nest.el = T)
+
+```
+
+Below is the results of the comprehensive model using Choice 1 (Not using any contraceptive method) as the reference level. McFadden R-squared value is 0.07, suggesting the model's relatively poor predictive power.
+
+The strongest independent variable when comparing choice 1 and choices 2 and 3 is **women's education**, it has an obvious positive impact on the women's choices, judged by the increasing coefficients when the level of education increases. However, education doesn't make women more likely to choose short-term methods. **Media exposure** (which is in a different order from other independent variables) and **working status** also have positive impacts on their choices; while **age** has a negative impacts. (Admittedly, many independent variables should have correlation with each other, which cannot be tested given the nature of the data.)
+
+``` {R}
+
+mldata <- mlogit.data(data = output, 
+                      choice = "method", 
+                      shape = "wide")
+
+model_1 <- mlogit(method ~ 0 | age + religion + education_w + education_h + working + media,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt",
+                nests = list(positive = c("2", "3"), negative = c("1")),,
+                reflevel = "1",
+                un.nest.el = T)
+
+summary(model_1)
+
+```
+
+Below is the same model using choice 2 (long-term method) as the reference level. It is shown in the results below that none of the independent variable actually has significant impact on the women's choices as compared with choice 3 (short-term method).
+
+``` {R}
+
+model_1a <- mlogit(method ~ 0 | age + religion + education_w + education_h + working + media,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt",
+                nests = list(positive = c("2", "3"), negative = c("1")),
+                reflevel = "2",
+                un.nest.el = T)
+
+summary(model_1a)
+
+```
+
+Based on the first model, **religion** and **education of husband** are removed from the model. Thus the new model is compared with the old one. The results of the new model (using choice 1 as reference) seem to suggest that the new model is a worse mode, even though the difference is not significant. All the impacts are still available, but their significance is weaker than in the original model.
+
+``` {R}
+
+model_2 <- mlogit(method ~ 0 | age + education_w + working + media,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt",
+                nests = list(positive = c("2", "3"), negative = c("1")),
+                reflevel = "1",
+                un.nest.el = T)
+
+summary(model_2)
+
+```
+
+So a likelihood ratio test was conducted to compare the two models. The results indicate that the first model is a significantly better one on the 0.001 level.
+
+``` {R}
+
+lrtest(model_1, model_2)
+
+```
+
+#### So what if the number of children is added to the formula?
+
+Adding the number of children to the formula could result a iv value higher than 1, which suggests that the nest may not exist.
+
+``` {R}
+
+model_3 <- mlogit(method ~ 0 | age + child + religion + education_w + education_h + working + media,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt",
+                nests = list(positive = c("2", "3"), negative = c("1")),,
+                reflevel = "1",
+                un.nest.el = T)
+
+summary(model_3)
+
+```
+
+A t-test is conducted for this hypothesis. The resulting t-value is smaller than the critical t-value at 5% level. So the hypothesis that the nest exists can be rejected. 
+
+``` {R}
+
+(coef(model_3)['iv']-1)/sqrt(vcov(model_3)['iv', 'iv'])
+
+```
+
+However, according to the result of the likeliness-ratio test, the last model including the number of children, is a better model than our initial model without this variable, despite of the fact that the nest probably doesn't exist, which leaves clue for developing a better model.
+
+``` {R}
+
+lrtest(model_1, model_3)
+
+```
+
+## Conclusions
+
+According to our analysis, depending on the model established, different independent variables can be related with women's decisions to adopt contraceptive methods, but the level of education women receive seems to be the strongest one that explains.
+
+Besides other factors, number of children seems to be another strong factor connected with women's decisions to adopte both long-term and short-term methods. And the resulting model is significantly better than the models without this variable. 
+
+## Reference:
+
+Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
