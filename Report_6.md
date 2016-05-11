@@ -472,7 +472,7 @@ choices as compared with choice 3 (short-term method).
     ## 0.22607 0.42702 0.34691 
     ## 
     ## bfgs method
-    ## 29 iterations, 0h:0m:1s 
+    ## 29 iterations, 0h:0m:2s 
     ## g'(-H)^-1g =  11.3 
     ## last step couldn't find higher value 
     ## 
