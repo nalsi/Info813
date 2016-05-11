@@ -98,8 +98,6 @@ variables include:
 
 Below is the head of this dataset.
 
-    head(output)
-
     ##   age education_w education_h child religion working occupation_h SII
     ## 1  24           2           3     3        1       1            2   3
     ## 2  45           1           3    10        1       1            3   4
@@ -116,8 +114,6 @@ Below is the head of this dataset.
     ## 6     0      1
 
 Ane below is a summary of the dataset by the dependent variable.
-
-    describeBy(output, group = output$method)
 
     ## group: 1
     ##              vars   n  mean   sd median trimmed   mad min max range  skew
@@ -191,16 +187,6 @@ Ane below is a summary of the dataset by the dependent variable.
     ## media           15.42 0.01
     ## method            NaN 0.00
 
-    output[,2] <- as.factor(output[,2])
-    output[,3] <- as.factor(output[,3])
-    output[,5] <- as.factor(output[,5])
-    output[,6] <- as.factor(output[,6])
-    output[,7] <- as.factor(output[,7])
-    output[,8] <- as.factor(output[,8])
-    output[,9] <- as.factor(output[,9])
-    output[,10] <- as.factor(output[,10])
-    output$child <- as.numeric(output$child)
-
 Research method
 ---------------
 
@@ -225,11 +211,6 @@ It seems that the multicollinearity hypothesis is met because the GVIF
 (generalized variance inflation factor) values of all the independent
 variables in the comprehensive model are lower than 3.
 
-    lm.model <- glm(method ~ age + child + religion + education_w + education_h + working + media,
-                    data = output,
-                    family=binomial(link="logit"))
-    vif(lm.model)
-
     ##                 GVIF Df GVIF^(1/(2*Df))
     ## age         1.758286  1        1.326004
     ## child       1.785492  1        1.336223
@@ -243,23 +224,6 @@ variables in the comprehensive model are lower than 3.
 
 However, the IIA hypothesis is not met using the comprehensive model and
 the model based on a subset of the data.
-
-    mldata <- mlogit.data(data = output, 
-                          choice = "method", 
-                          shape = "wide")
-
-    model <- mlogit(method ~ 1 | age + child + religion + education_w + education_h + working + media,
-                    data = mldata,
-                    shape = "long", 
-                    alt.var = "alt")
-
-    model_new <- mlogit(method ~ 1 | age + child + religion + education_w + education_h + working + media,
-                    data = mldata,
-                    shape = "long", 
-                    alt.var = "alt",
-                    alt.subset = c("1", "2"))
-
-    mlogit::hmftest(model, model_new)
 
     ## 
     ##  Hausman-McFadden test
@@ -276,55 +240,6 @@ cramersV from package **lsr** version 0.5). The results (some of which
 might be problematic) indicate that there might be a pretty strong
 correlation between the education levels of wife and husband. But all
 the other variables might just have relatively week correlation.
-
-    list <- c(2, 3, 5, 6, 7, 8, 9, 10)
-    cramer_table <- data.frame()
-    for (i in 1:length(list)) {
-      for  (j in 1:length(list)) {
-        cramer_table[i, j] <- cramersV(table(output[,list[i]], output[,list[j]]))
-        colnames(cramer_table)[i] <- colnames(output)[list[i]]
-        rownames(cramer_table)[i] <- colnames(output)[list[i]]
-      }
-    }
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    ## Warning in chisq.test(...): Chi-squared approximation may be incorrect
-
-    cramer_table <- round(cramer_table, digits = 2)
-    cramer_table
 
     ##              education_w education_h religion working occupation_h  SII
     ## education_w         1.00        0.40     0.24    0.08         0.26 0.22
@@ -383,20 +298,6 @@ negative impacts. (Admittedly, many independent variables should have
 correlation with each other, which cannot be tested given the nature of
 the data.)
 
-    mldata <- mlogit.data(data = output, 
-                          choice = "method", 
-                          shape = "wide")
-
-    model_1 <- mlogit(method ~ 0 | age + religion + education_w + education_h + working + media,
-                    data = mldata,
-                    shape = "long", 
-                    alt.var = "alt",
-                    nests = list(positive = c("2", "3"), negative = c("1")),,
-                    reflevel = "1",
-                    un.nest.el = T)
-
-    summary(model_1)
-
     ## 
     ## Call:
     ## mlogit(formula = method ~ 0 | age + religion + education_w + 
@@ -449,16 +350,6 @@ Below is the same model using choice 2 (long-term method) as the
 reference level. It is shown in the results below that none of the
 independent variable actually has significant impact on the women's
 choices as compared with choice 3 (short-term method).
-
-    model_1a <- mlogit(method ~ 0 | age + religion + education_w + education_h + working + media,
-                    data = mldata,
-                    shape = "long", 
-                    alt.var = "alt",
-                    nests = list(positive = c("2", "3"), negative = c("1")),
-                    reflevel = "2",
-                    un.nest.el = T)
-
-    summary(model_1a)
 
     ## 
     ## Call:
@@ -515,16 +406,6 @@ suggest that the new model is a worse mode, even though the difference
 is not significant. All the impacts are still available, but their
 significance is weaker than in the original model.
 
-    model_2 <- mlogit(method ~ 0 | age + education_w + working + media,
-                    data = mldata,
-                    shape = "long", 
-                    alt.var = "alt",
-                    nests = list(positive = c("2", "3"), negative = c("1")),
-                    reflevel = "1",
-                    un.nest.el = T)
-
-    summary(model_2)
-
     ## 
     ## Call:
     ## mlogit(formula = method ~ 0 | age + education_w + working + media, 
@@ -569,8 +450,6 @@ So a likelihood ratio test was conducted to compare the two models. The
 results indicate that the first model is a significantly better one on
 the 0.001 level.
 
-    lrtest(model_1, model_2)
-
     ## Likelihood ratio test
     ## 
     ## Model 1: method ~ 0 | age + religion + education_w + education_h + working + 
@@ -587,16 +466,6 @@ the 0.001 level.
 Adding the number of children to the formula could result a iv value
 higher than 1, which suggests that the nest may not exist.
 
-    model_3 <- mlogit(method ~ 0 | age + child + religion + education_w + education_h + working + media,
-                    data = mldata,
-                    shape = "long", 
-                    alt.var = "alt",
-                    nests = list(positive = c("2", "3"), negative = c("1")),,
-                    reflevel = "1",
-                    un.nest.el = T)
-
-    summary(model_3)
-
     ## 
     ## Call:
     ## mlogit(formula = method ~ 0 | age + child + religion + education_w + 
@@ -609,7 +478,7 @@ higher than 1, which suggests that the nest may not exist.
     ## 0.42702 0.22607 0.34691 
     ## 
     ## bfgs method
-    ## 7 iterations, 0h:0m:0s 
+    ## 7 iterations, 0h:0m:1s 
     ## g'(-H)^-1g = 1.98E-07 
     ## gradient close to zero 
     ## 
@@ -651,8 +520,6 @@ A t-test is conducted for this hypothesis. The resulting t-value is
 smaller than the critical t-value at 5% level. So the hypothesis that
 the nest exists can be rejected.
 
-    (coef(model_3)['iv']-1)/sqrt(vcov(model_3)['iv', 'iv'])
-
     ##        iv 
     ## 0.3385628
 
@@ -660,8 +527,6 @@ However, according to the result of the likeliness-ratio test, the last
 model including the number of children, is a better model than our
 initial model without this variable, despite of the fact that the nest
 probably doesn't exist, which leaves clue for developing a better model.
-
-    lrtest(model_1, model_3)
 
     ## Likelihood ratio test
     ## 
