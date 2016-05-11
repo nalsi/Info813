@@ -223,7 +223,8 @@ variables in the comprehensive model are lower than 3.
 ###### Independence of irrelevant alternatives hypothesis
 
 However, the IIA hypothesis is not met using the comprehensive model and
-the model based on a subset of the data.
+the model based on a subset of the data, according to the results from
+Hausman-McFadden Test using the package mlogit.
 
     ## 
     ##  Hausman-McFadden test
@@ -285,7 +286,8 @@ independent variables are individual variables.
 Below is the results of the comprehensive model using Choice 1 (Not
 using any contraceptive method) as the reference level. McFadden
 R-squared value is 0.07, suggesting the model's relatively poor
-predictive power.
+predictive power. The iv coefficient is 0.04, which might suggest the
+validity of the nest.
 
 The strongest independent variable when comparing choice 1 and choices 2
 and 3 is **women's education**, it has an obvious positive impact on the
@@ -463,8 +465,8 @@ the 0.001 level.
 
 #### So what if the number of children is added to the formula?
 
-Adding the number of children to the formula could result a iv value
-higher than 1, which suggests that the nest may not exist.
+Adding the number of children to the formula could result a iv
+coefficient higher than 1, which suggests that the nest may not exist.
 
     ## 
     ## Call:

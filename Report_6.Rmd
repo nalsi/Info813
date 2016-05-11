@@ -99,7 +99,7 @@ vif(lm.model)
 
 ###### Independence of irrelevant alternatives hypothesis
 
-However, the IIA hypothesis is not met using the comprehensive model and the model based on a subset of the data.  
+However, the IIA hypothesis is not met using the comprehensive model and the model based on a subset of the data, according to the results from Hausman-McFadden Test using the package mlogit.
 
 ``` {R}
 
@@ -158,7 +158,7 @@ model_1 <- mlogit(method ~ 0 | age + religion + education_w + education_h + work
 
 ```
 
-Below is the results of the comprehensive model using Choice 1 (Not using any contraceptive method) as the reference level. McFadden R-squared value is 0.07, suggesting the model's relatively poor predictive power.
+Below is the results of the comprehensive model using Choice 1 (Not using any contraceptive method) as the reference level. McFadden R-squared value is 0.07, suggesting the model's relatively poor predictive power. The iv coefficient is 0.04, which might suggest the validity of the nest.
 
 The strongest independent variable when comparing choice 1 and choices 2 and 3 is **women's education**, it has an obvious positive impact on the women's choices, judged by the increasing coefficients when the level of education increases. However, education doesn't make women more likely to choose short-term methods. **Media exposure** (which is in a different order from other independent variables) and **working status** also have positive impacts on their choices; while **age** has a negative impacts. (Admittedly, many independent variables should have correlation with each other, which cannot be tested given the nature of the data.)
 
@@ -222,7 +222,7 @@ lrtest(model_1, model_2)
 
 #### So what if the number of children is added to the formula?
 
-Adding the number of children to the formula could result a iv value higher than 1, which suggests that the nest may not exist.
+Adding the number of children to the formula could result a iv coefficient higher than 1, which suggests that the nest may not exist.
 
 ``` {R}
 
