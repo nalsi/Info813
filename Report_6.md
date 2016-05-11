@@ -363,7 +363,7 @@ choices as compared with choice 3 (short-term method).
     ## 0.22607 0.42702 0.34691 
     ## 
     ## bfgs method
-    ## 29 iterations, 0h:0m:1s 
+    ## 29 iterations, 0h:0m:2s 
     ## g'(-H)^-1g =  11.3 
     ## last step couldn't find higher value 
     ## 
@@ -546,12 +546,12 @@ Conclusions
 According to our analysis, depending on the model established, different
 independent variables can be related with woman's decisions to adopt
 contraceptive methods, but the level of education women receive seems to
-be the strongest one that explains.
+be the strongest predictor.
 
 Besides other factors, number of children seems to be another strong
 factor connected with woman's decisions to adopt both long-term and
-short-term methods. And the resulting model is significantly better than
-the models without this variable.
+short-term methods. And the model including this variable is
+significantly better than the models without this variable.
 
 Reference:
 ----------

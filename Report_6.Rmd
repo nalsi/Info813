@@ -144,7 +144,7 @@ cramer_table
 
 #### Model performance
 
-The rejection of the IIA hypothesis, and the fact that the three selections in the dataset can be combined together suggest that a nested model is a better choice. So a nested logit model is established. Package mlogit makes the distinction between alternative/individual variables. There are three sections in the model using this package, the first and third sections contain alternative variables (with and without specific coefficient, respectively), and the second section contains individual variables. In this case, all the independent variables are individual variables rather than choice variables.
+The rejection of the IIA hypothesis, and the fact that the three selections in the dataset can be combined together suggest that a nested model is a better choice. So a nested logit model is established. Package mlogit makes the distinction between alternative/individual variables. There are three sections in the model using this package, the first and third sections contain alternative variables (with and without specific coefficient, respectively), and the second section contains individual variables. In this case, all the independent variables are individual variables rather than choice variables. 
 
 ``` {R echo = T}
 
@@ -256,9 +256,9 @@ lrtest(model_1, model_3)
 
 ## Conclusions
 
-According to our analysis, depending on the model established, different independent variables can be related with woman's decisions to adopt contraceptive methods, but the level of education women receive seems to be the strongest one that explains.
+According to our analysis, depending on the model established, different independent variables can be related with woman's decisions to adopt contraceptive methods, but the level of education women receive seems to be the strongest predictor.
 
-Besides other factors, number of children seems to be another strong factor connected with woman's decisions to adopt both long-term and short-term methods. And the resulting model is significantly better than the models without this variable. 
+Besides other factors, number of children seems to be another strong factor connected with woman's decisions to adopt both long-term and short-term methods. And the model including this variable is significantly better than the models without this variable. 
 
 ## Reference:
 
