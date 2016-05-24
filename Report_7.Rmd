@@ -1,0 +1,227 @@
+---
+title: "Report_7"
+author: "Kai Li"
+date: "May 11, 2016"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F)
+
+library(foreign)
+library(psych)
+library(mvoutlier)
+library(MVN)
+library(MASS)
+library(pander)
+
+data <- read.spss("psych_orientation.sav")
+output <- as.data.frame(data)
+colnames(output) <- c("condition", "anxiety", "depression", "anger")
+output$condition <- as.factor(output$condition)
+
+```
+
+# Report 7: MANOVA analysis on pschological orientation
+
+## Question statement
+
+The following question will be answered:
+
+- If the video-tape orientation on psychotherapy goals and process had a significant impact on the subject' levels of anxiety, depression, and anger?
+
+## Data description
+
+The dataset has 4 variables:
+
+- condition:
+- anxiety:
+- depression:
+- anger:
+
+There are 46 observations described in the dataset.
+
+## Method
+
+MANOVA method is adopted to answer the question. ANOVA and discriminant analysis methods are used to triangulate the results.
+
+## Results
+
+#### Descriptive analysis
+
+Below is a description of the three dependent ratio variables, anxiety, depression, and anger, on the two levels of the independent nominal variables, condition.
+
+``` {R}
+
+describeBy(output, group = output$condition)
+
+par(mfrow = c(2,2))
+plot(output$anxiety ~ output$condition)
+plot(output$depression ~ output$condition)
+plot(output$anger ~ output$condition)
+
+```
+
+Below are the histograms of thre three ratio variables, which suggest that they are far from normally distributed, and not to mention some outliers.
+
+``` {R}
+
+par(mfrow = c(2,2))
+
+hist(output$anxiety, breaks = 20, main = "Anxiety")
+hist(output$depression, breaks = 20, main = "Depression")
+hist(output$anger, breaks = 20, main = "Anger")
+
+```
+
+Moreover, scatterplots are plotted between these three variables. Besides the fact that there are seme pretty strong outliers, it can also be seen that there is pretty strong correlation among these three variables.
+
+``` {R}
+
+pairs(output[,2:4], cex.labels = 1.2)
+
+```
+
+#### Data transformation
+
+Because these three dependent variables are clearly not normally distributed. The following transformation is done to all of them. And plotted below are the histograms of the three transformed variables.
+
+> sqrt(abs(x - mean(x)))
+
+``` {R}
+
+output$anxiety.1 <- sqrt(abs(output$anxiety - mean(output$anxiety)))
+output$depression.1 <- sqrt(abs(output$depression - mean(output$depression)))
+output$anger.1 <- sqrt(abs(output$anger - mean(output$anger)))
+
+par(mfrow = c(2,2))
+
+hist(output$anxiety.1, main = "Transformed anxiety")
+hist(output$depression.1, main = "Transformed depression")
+hist(output$anger.1, main = "Transformed anger")
+
+```
+
+#### Assumption test
+
+1. Outlier
+
+I conducted adjusted quantile plot (**aq.plot** function in *mvoutlier* package, version 2.0.6), which is using chi-squared method to identify outliers in the first two principal components based on Mahalanobis distances. Even though there are still three outliers in the transformed data, the performance is greatly improved from the original variables, where there were 11 outliers.
+
+``` {R}
+
+## Package mvoutlier
+outliers <- aq.plot(output[c("anxiety.1", "depression.1", "anger.1")])
+outliers
+
+```
+
+2. Univariate normality
+
+Univariate normality test is conducted using **uniNorm** function in *MVN* package, version 4.0. The results indicate that all the three variables pass Shapiro-Wilk's Normality test.
+
+``` {R}
+
+## Package MVN
+uniNorm(output[,5:7])
+
+```
+
+3. Multivariate normality
+
+Multivariant normality test is conducted using **mardiaTest** function in *MVN* package, version 4.0. The results indicate that the three variables are multivariate normal.
+
+``` {R}
+
+## Multivariant normality: Mardia’s Multivariate Normality Test using Package MVN
+mardiaTest(output[,5:7], cov = T, qqplot = F)
+
+```
+
+4. Homogeneity of variances
+
+Bartlett test (using **bartlett.test** function in *stats* package, version 3.2.4) is used for homogeneity of variances. The resulting p-value is 0.60, which suggests that the null hypothesis that the variances are all equal cannot be rejected.
+
+``` {R}
+
+bartlett.test(anxiety.1 + depression.1 + anger.1~condition, data=output)
+
+```
+
+#### MANOVA test
+
+> model <- anxiety + depression + anger ~ situation
+
+Below is the result of the MANOVA test using all four kinds of test methods. It is shown that no matter what test method is used, the independent variable, condition, doesn't have significant impacts on the three independent variables. 
+
+``` {R}
+
+fit <- manova(cbind(anxiety.1, depression.1, anger.1) ~ condition, output)
+summary(fit, test = "Roy")
+summary(fit, test = "Wilks")
+summary(fit, test = "Pillai")
+summary(fit, test = "Hotelling-Lawley")
+
+roy <- summary(fit, test = "Roy")
+wilks <- summary(fit, test = "Wilks")
+pillai <- summary(fit, test = "Pillai")
+hotelling <- summary(fit, test = "Hotelling-Lawley")
+
+result.table <- data.frame(Method = c("Roy", "Pillai", "Wilks", "Hotelling"), 
+                           Value = c(roy$stats[3], pillai$stats[3], wilks$stats[3], hotelling$stats[3]),
+                           F.value = c(roy$stats[5], pillai$stats[5], wilks$stats[5], hotelling$stats[5]),
+                           p.value = c(roy$stats[11], pillai$stats[11], wilks$stats[11], hotelling$stats[11]))
+pander(result.table)
+
+```
+
+#### Post hoc: one-way ANOVA
+
+To triangulate the results from the MANOVA test, three individual one-way ANOVA tests are conducted, the results of which are shown below. The results indicate that the condition variable has somewhat significant impacts on anxiety (p-value: 0.511), but not depression (p-value: 0.689) and anger (0.957). These results could support the results from the MANOVA test that overall, condition doesn't impact the three independent variables.
+
+``` {R}
+
+fit_anxiety <- aov(anxiety.1 ~ condition, output)
+summary(fit_anxiety)
+
+fit_depression <- aov(depression.1 ~ condition, output)
+summary(fit_depression)
+
+fit_anger <- aov(anger.1 ~ condition, output)
+summary(fit_anger)
+
+```
+
+#### Post hoc: discriminant analysis
+
+``` {R}
+
+## LDA using MASS package
+lda.model <- lda(condition ~ anxiety.1 + depression.1 + anger.1, 
+                   data = output, CV = T)
+
+lda.model.1 <- lda(condition ~ anxiety.1 + depression.1 + anger.1, 
+                   data = output)
+
+lda.model.1$scaling
+
+```
+
+``` {R}
+
+lda.values <- predict(lda.model.1)
+apply(lda.values$posterior, MARGIN = 1, FUN = max)
+
+ldahist(data = lda.values$x[,1], g = output$condition)
+
+```
+
+``` {R}
+
+## accuracy rate
+ct_1 <- table(output$condition, lda.model$class)
+
+sum(diag(prop.table(ct_1)))
+table(lda.values$class, output$condition)
+
+```

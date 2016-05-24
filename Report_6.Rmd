@@ -263,3 +263,46 @@ Besides other factors, number of children seems to be another strong factor conn
 ## Reference:
 
 Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
+
+
+``` {R}
+
+data <- read.table("cmc.data.txt", sep = ",")
+output <- as.data.frame(data)
+colnames(output) <- c("age", "education_w", "education_h", "child", "religion", "working", "occupation_h", "SII", "media", "method")
+for (i in 1:nrow(output)) {
+  if (output$method[i] == 3) {
+    output$method[i] <- 2
+  }
+}
+
+output[,2] <- as.factor(output[,2])
+output[,3] <- as.factor(output[,3])
+output[,5] <- as.factor(output[,5])
+output[,6] <- as.factor(output[,6])
+output[,7] <- as.factor(output[,7])
+output[,8] <- as.factor(output[,8])
+output[,9] <- as.factor(output[,9])
+output[,10] <- as.factor(output[,10])
+output$child <- as.numeric(output$child)
+
+mldata <- mlogit.data(data = output, 
+                      choice = "method", 
+                      alt.levels = c("1", "2"),
+                      shape = "wide")
+
+model_0 <- mlogit(method ~ alt,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt",
+                reflevel = "1")
+summary(model_1)
+
+model_1 <- mlogit(method ~ child | age + religion + education_w + education_h + working + media,
+                data = mldata,
+                shape = "long", 
+                alt.var = "alt",
+                reflevel = "1")
+summary(model_1)
+
+```

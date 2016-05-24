@@ -1,0 +1,196 @@
+---
+title: 'report 8: structural equation models'
+author: "Kai Li"
+date: "May 19, 2016"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F)
+
+library(foreign)
+library(lavaan)
+library(semPlot)
+library(pander)
+
+data <- read.spss("MATH_ATTITUDE.sav")
+output <- data.frame(data)
+colnames(output) <- c("ID", "X1", "X2", "X3", "X1a", "X2a", "X3a", "Y1", "Y2", "Y3", "score")
+output[,1] <- as.factor(output[,1])
+
+```
+
+# Report 8: Structural equation models for math attitudes
+
+## Question statement
+
+A researcher is studying the impact of students' attitudes toward math on their evaluations of a new quantitative methods course.
+
+1. How would you evaluate the adequacy of the researcher's measurement of attitude toward math?
+2. Test the hypothesis that there is no effect of attitude toward math on students' evaluation of the new quantitative course, controlling for the effect of student aptitude.
+
+## Methods
+
+Structural equation models method is used in this report.
+
+## Data description
+
+Besides the students' ID, the dataset includes the following four sets of measurements:
+
+**Students' attitudes toward math**: the authors used three seven-point semantic differential scales of nervous-confident, capable-inept, angry-happy. For all of the three scales, the research tested twice at the beginnings of two terms. It includes the following variables:
+
+- X1
+- X2
+- X3
+- X1a
+- X2a
+- X3a
+
+**Students' evaluation of the quantitative course**: using three seven-point Likert scale (1: strongly disagree; 7: strongly agree), the author asked the following three questions to the students:
+
+- "I will be able to use what I learned in this course" (Y1)
+- "The subject matter of this course was not relevant to me" (Y2)
+- "This was a great course" (Y3)
+
+**Students' scores of a aptitude test**: (score)
+
+The dataset includes the responses and scores of 141 students.
+
+## Results
+
+#### Descriptive analysis
+
+Below is the bar charts/histograms of all the measurement variables.
+
+``` {R fig.height = 30, fig.width = 7}
+
+par(mfrow = c(5, 2))
+plot(as.factor(output[,2]))
+plot(as.factor(output[,3]))
+plot(as.factor(output[,4]))
+plot(as.factor(output[,5]))
+plot(as.factor(output[,6]))
+plot(as.factor(output[,7]))
+plot(as.factor(output[,8]))
+plot(as.factor(output[,9]))
+plot(as.factor(output[,10]))
+hist(output[,11], breaks = 30)
+
+```
+
+#### SEM modelling
+
+Based on the research design and research questions, the following model is established:
+
+``` {R}
+
+model <- "
+  # measurement model
+  att1 =~ X1 + X2 + X3
+  att2 =~ X1a + X2a + X3a
+  eval =~ Y1 + Y2 + Y3
+
+  # regression model
+  att2 ~ att1
+  eval ~ att1 + att2
+
+  # residuals
+  X1 ~~ X1a
+  X2 ~~ X2a
+  X3 ~~ X3a
+X1 ~~ 1 * X1
+X2 ~~ 1 * X2
+X3 ~~ 1 * X3
+X1a ~~ 1 * X1a
+X2a ~~ 1 * X2a
+X3a ~~ 1 * X3a
+Y1 ~~ 1 * Y1
+Y2 ~~ 1 * Y2
+Y3 ~~ 1 * Y3
+"
+fit <- sem(model, data = output)
+fit_value <- fitMeasures(fit)
+summary(fit, standardized = T)
+fit_sum <- parameterEstimates(fit)
+
+```
+
+Below are some of the key numbers of this model. The high p-value, CFI, and TLI values and low RMSEA value suggest that this model is solid. Moreover, according to the results displayed above, there seems to be a strong connection between the two attitude surveys; while even though the first survey has a somewhat strong connection with the students' evaluation, the second one is much more weakly connected.
+
+More importantly, all of the three questions seem to have high coefficients and Z-values in the overall survey design, suggesting a high level of adequacy of the survey questions.
+
+``` {R}
+
+report.table <- data.frame(Measures = c("p.value", "CFI", "TLI", "RMSEA"), 
+                           Values = c(fit_value[5], fit_value[9], fit_value[10], fit_value[23]),
+                           row.names = 1:4)
+pander(report.table)
+
+```
+
+#### Controlling for the effect of students' aptitude
+
+According to the results in the last section, there seems to be a *not so strong* connection between students' evaluation and their first attitude test, but no significant connection between the evaluation and the second test.
+
+In order to rule out the effects of students' aptitude on their evaluation, all the students are randomly splitted into two groups. The sample size and the mean test scores are shown below.
+
+``` {R}
+
+splitdf <- function(dataframe, seed=NULL) {
+	if (!is.null(seed)) set.seed(seed)
+	index <- 1:nrow(dataframe)
+	splitindex <- sample(index, trunc(length(index)/2))
+	set1 <- dataframe[splitindex, ]
+	set2 <- dataframe[-splitindex, ]
+	list(set1=set1,set2=set2)
+}
+splits <- splitdf(output, seed = 1001)
+str(splits)
+lapply(splits, nrow)
+lapply(splits, head)
+set1 <- splits$set1
+set2 <- splits$set2
+
+set.table <- data.frame(Set = c("Set 1", "Set 2"),
+                        Sample = c(nrow(set1), nrow(set2)),
+                        Mean.score = c(mean(set1$score), mean(set2$score)))
+pander(set.table)
+
+```
+
+Then the above SEM model was applied to both subsets. Below are the summaries of the results of the overall model and the relationships between students' attitudes and evaluations.
+
+``` {R}
+
+fit.1 <- sem(model, data = set1)
+fit.2 <- sem(model, data = set2)
+fit.1.sum <- fitMeasures(fit.1)
+fit.2.sum <- fitMeasures(fit.2)
+fit.1.value <- parameterEstimates(fit.1)
+fit.2.value <- parameterEstimates(fit.2)
+
+result.table.1 <- data.frame(
+  Set = c("Whole", "Set 1", "Set 2"),
+  p.value = c(fit_value[5], fit.1.sum[5], fit.2.sum[5]),
+  CFI = c(fit_value[9], fit.1.sum[9], fit.2.sum[9]),
+  TLI = c(fit_value[10], fit.1.sum[10], fit.2.sum[10]),
+  RMSEA = c(fit_value[23], fit.1.sum[23], fit.2.sum[23]),
+  Att1.Eval.coef = c(fit_sum[11,4], fit.1.value[11,4], fit.2.value[11,4]),
+  Att1.Eval.z = c(fit_sum[11,6], fit.1.value[11,6], fit.2.value[11,6]),
+  Att1.Eval.p = c(fit_sum[11,7], fit.1.value[11,7], fit.2.value[11,7]),
+  Att2.Eval.coef = c(fit_sum[12,4], fit.1.value[12,4], fit.2.value[12,4]),
+  Att2.Eval.z = c(fit_sum[12,6], fit.1.value[12,6], fit.2.value[12,6]),
+  Att2.Eval.p = c(fit_sum[12,7], fit.1.value[12,7], fit.2.value[12,7])
+)
+result.table.1[,2:11] <- round(result.table.1[,2:11], digits = 3)
+pander(result.table.1)
+
+```
+
+The results indicate that the overall validity of the model doesn't change significantly after it's applied to a subset of the dataset; so is the relationship between the two attitude surveys and the course evaluation: **there doesn't seem to have a solid strong effect of attitude toward the evaluation**.
+
+## Conclusions
+
+This report shows that the three questions in the survey have a high leve of adequency given their consistancies in the two rounds of responces that were received. 
+
+Moreover, there doesn't seem to be a strong effect of attitude toward the evaluation when the student eptitude in math is controlled, as is seen by the results of the two subsets of the dataset.
