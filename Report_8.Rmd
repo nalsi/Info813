@@ -73,16 +73,16 @@ Below is the bar charts/histograms of all the measurement variables.
 ``` {R fig.height = 20, fig.width = 7}
 
 par(mfrow = c(5, 2))
-plot(as.factor(output[,2]))
-plot(as.factor(output[,3]))
-plot(as.factor(output[,4]))
-plot(as.factor(output[,5]))
-plot(as.factor(output[,6]))
-plot(as.factor(output[,7]))
-plot(as.factor(output[,8]))
-plot(as.factor(output[,9]))
-plot(as.factor(output[,10]))
-hist(output[,11], breaks = 30)
+plot(as.factor(output[,2]), main = "X1")
+plot(as.factor(output[,3]), main = "X2")
+plot(as.factor(output[,4]), main = "X3")
+plot(as.factor(output[,5]), main = "X1a")
+plot(as.factor(output[,6]), main = "X2a")
+plot(as.factor(output[,7]), main = "X3a")
+plot(as.factor(output[,8]), main = "Y1")
+plot(as.factor(output[,9]), main = "Y2")
+plot(as.factor(output[,10]), main = "Y3")
+hist(output[,11], breaks = 30, main = "score")
 
 ```
 
