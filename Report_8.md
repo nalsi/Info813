@@ -48,6 +48,16 @@ author asked the following three questions to the students:
 
 The dataset includes the responses and scores of 141 students.
 
+Below is the head of the dataset.
+
+    ##     ID X1 X2 X3 X1a X2a X3a Y1 Y2 Y3 score
+    ## 1 1001  6  3  3   4   5   1  1  7  1   624
+    ## 2 1002  4  4  4   4   3   5  2  4  3   616
+    ## 3 1003  4  5  5   4   4   5  4  3  4   764
+    ## 4 1004  3  5  3   4   4   4  1  6  2   630
+    ## 5 1005  2  5  3   1   6   2  5  6  5   685
+    ## 6 1006  2  5  1   2   5   1  2  4  4   626
+
 Results
 -------
 
@@ -55,7 +65,7 @@ Results
 
 Below is the bar charts/histograms of all the measurement variables.
 
-![](Report_8_files/figure-markdown_strict/unnamed-chunk-1-1.png)
+![](Report_8_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
 #### SEM modelling
 
@@ -175,7 +185,7 @@ attitude test, but no significant connection between the evaluation and
 the second test.
 
 In order to rule out the effects of students' aptitude on their
-evaluation, all the students are randomly splitted into two groups. The
+evaluation, all the students are randomly split into two groups. The
 sample size and the mean test scores are shown below.
 
     ## List of 2
@@ -353,15 +363,16 @@ The results indicate that the overall validity of the model doesn't
 change significantly after it's applied to a subset of the dataset; so
 is the relationship between the two attitude surveys and the course
 evaluation: **there doesn't seem to have a solid strong effect of
-attitude toward the evaluation**.
+attitude toward the evaluation**. Based on the results, the relationship
+is either coincidental or weak.
 
 Conclusions
 -----------
 
 This report shows that the three questions in the survey have a high
-leve of adequency given their consistancies in the two rounds of
-responces that were received.
+level of adequacy given their consistencies in the two rounds of
+responses that were received.
 
-Moreover, there doesn't seem to be a strong effect of attitude toward
-the evaluation when the student eptitude in math is controlled, as is
-seen by the results of the two subsets of the dataset.
+Moreover, there doesn't seem to be a strong effect of attitudes toward
+the evaluation of the course when the student aptitude in math is
+controlled.

@@ -56,13 +56,21 @@ Besides the students' ID, the dataset includes the following four sets of measur
 
 The dataset includes the responses and scores of 141 students.
 
+Below is the head of the dataset.
+
+``` {R}
+
+head(output)
+
+```
+
 ## Results
 
 #### Descriptive analysis
 
 Below is the bar charts/histograms of all the measurement variables.
 
-``` {R fig.height = 30, fig.width = 7}
+``` {R fig.height = 20, fig.width = 7}
 
 par(mfrow = c(5, 2))
 plot(as.factor(output[,2]))
@@ -132,7 +140,7 @@ pander(report.table)
 
 According to the results in the last section, there seems to be a *not so strong* connection between students' evaluation and their first attitude test, but no significant connection between the evaluation and the second test.
 
-In order to rule out the effects of students' aptitude on their evaluation, all the students are randomly splitted into two groups. The sample size and the mean test scores are shown below.
+In order to rule out the effects of students' aptitude on their evaluation, all the students are randomly split into two groups. The sample size and the mean test scores are shown below.
 
 ``` {R}
 
@@ -187,10 +195,10 @@ pander(result.table.1)
 
 ```
 
-The results indicate that the overall validity of the model doesn't change significantly after it's applied to a subset of the dataset; so is the relationship between the two attitude surveys and the course evaluation: **there doesn't seem to have a solid strong effect of attitude toward the evaluation**.
+The results indicate that the overall validity of the model doesn't change significantly after it's applied to a subset of the dataset; so is the relationship between the two attitude surveys and the course evaluation: **there doesn't seem to have a solid strong effect of attitude toward the evaluation**. Based on the results, the relationship is either coincidental or weak.
 
 ## Conclusions
 
-This report shows that the three questions in the survey have a high leve of adequency given their consistancies in the two rounds of responces that were received. 
+This report shows that the three questions in the survey have a high level of adequacy given their consistencies in the two rounds of responses that were received. 
 
-Moreover, there doesn't seem to be a strong effect of attitude toward the evaluation when the student eptitude in math is controlled, as is seen by the results of the two subsets of the dataset.
+Moreover, there doesn't seem to be a strong effect of attitudes toward the evaluation of the course when the student aptitude in math is controlled.
