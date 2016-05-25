@@ -26,8 +26,8 @@ output[,1] <- as.factor(output[,1])
 
 A researcher is studying the impact of students' attitudes toward math on their evaluations of a new quantitative methods course.
 
-1. How would you evaluate the adequacy of the researcher's measurement of attitude toward math?
-2. Test the hypothesis that there is no effect of attitude toward math on students' evaluation of the new quantitative course, controlling for the effect of student aptitude.
+1. How would you evaluate the adequacy of the researcher's measurement of attitudes?
+2. Test the hypothesis that there is no effect of attitudes on students' evaluation of the new quantitative course, controlling for the effect of student aptitude.
 
 ## Methods
 
@@ -37,24 +37,19 @@ Structural equation models method is used in this report.
 
 Besides the students' ID, the dataset includes the following four sets of measurements:
 
-**Students' attitudes toward math**: the authors used three seven-point semantic differential scales of nervous-confident, capable-inept, angry-happy. For all of the three scales, the research tested twice at the beginnings of two terms. It includes the following variables:
+**Students' attitudes toward math**: the authors used three seven-point semantic differential scales of nervous-confident, capable-inept, angry-happy. The researcher conducted the same survey twice at the beginnings of two terms, which creates the following variables:
 
-- X1
-- X2
-- X3
-- X1a
-- X2a
-- X3a
+- nervous-confident (X1 and X1a)
+- capable-inept (X2 and X2a)
+- angry-happy (X3 and X3a)
 
-**Students' evaluation of the quantitative course**: using three seven-point Likert scale (1: strongly disagree; 7: strongly agree), the author asked the following three questions to the students:
+**Students' evaluation of the quantitative course**: using three seven-point Likert scale (1: strongly disagree; 7: strongly agree), the students rated the following three statements:
 
 - "I will be able to use what I learned in this course" (Y1)
 - "The subject matter of this course was not relevant to me" (Y2)
 - "This was a great course" (Y3)
 
-**Students' scores of a aptitude test**: (score)
-
-The dataset includes the responses and scores of 141 students.
+**Students' scores of an aptitude test**: (score)
 
 Below is the head of the dataset.
 
@@ -68,7 +63,7 @@ head(output)
 
 #### Descriptive analysis
 
-Below is the bar charts/histograms of all the measurement variables.
+Below is the bar charts/histograms of all the measurement variables. All the scale test results are treated as nominal data.
 
 ``` {R fig.height = 20, fig.width = 7}
 
@@ -90,7 +85,7 @@ hist(output[,11], breaks = 30, main = "score")
 
 Based on the research design and research questions, the following model is established:
 
-``` {R}
+``` {R echo = T}
 
 model <- "
   # measurement model
@@ -102,20 +97,17 @@ model <- "
   att2 ~ att1
   eval ~ att1 + att2
 
-  # residuals
+  # residuals variance
   X1 ~~ X1a
   X2 ~~ X2a
   X3 ~~ X3a
-X1 ~~ 1 * X1
-X2 ~~ 1 * X2
-X3 ~~ 1 * X3
-X1a ~~ 1 * X1a
-X2a ~~ 1 * X2a
-X3a ~~ 1 * X3a
-Y1 ~~ 1 * Y1
-Y2 ~~ 1 * Y2
-Y3 ~~ 1 * Y3
+
 "
+
+```
+
+``` {R}
+
 fit <- sem(model, data = output)
 fit_value <- fitMeasures(fit)
 summary(fit, standardized = T)
@@ -199,6 +191,6 @@ The results indicate that the overall validity of the model doesn't change signi
 
 ## Conclusions
 
-This report shows that the three questions in the survey have a high level of adequacy given their consistencies in the two rounds of responses that were received. 
+This report shows that the three questions in the survey have a high level of adequacy given their consistencies in the two rounds of responses received. 
 
 Moreover, there doesn't seem to be a strong effect of attitudes toward the evaluation of the course when the student aptitude in math is controlled.

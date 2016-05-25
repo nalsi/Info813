@@ -8,10 +8,10 @@ A researcher is studying the impact of students' attitudes toward math
 on their evaluations of a new quantitative methods course.
 
 1.  How would you evaluate the adequacy of the researcher's measurement
-    of attitude toward math?
-2.  Test the hypothesis that there is no effect of attitude toward math
-    on students' evaluation of the new quantitative course, controlling
-    for the effect of student aptitude.
+    of attitudes?
+2.  Test the hypothesis that there is no effect of attitudes on
+    students' evaluation of the new quantitative course, controlling for
+    the effect of student aptitude.
 
 Methods
 -------
@@ -26,27 +26,22 @@ of measurements:
 
 **Students' attitudes toward math**: the authors used three seven-point
 semantic differential scales of nervous-confident, capable-inept,
-angry-happy. For all of the three scales, the research tested twice at
-the beginnings of two terms. It includes the following variables:
+angry-happy. The researcher conducted the same survey twice at the
+beginnings of two terms, which creates the following variables:
 
--   X1
--   X2
--   X3
--   X1a
--   X2a
--   X3a
+-   nervous-confident (X1 and X1a)
+-   capable-inept (X2 and X2a)
+-   angry-happy (X3 and X3a)
 
 **Students' evaluation of the quantitative course**: using three
 seven-point Likert scale (1: strongly disagree; 7: strongly agree), the
-author asked the following three questions to the students:
+students rated the following three statements:
 
 -   "I will be able to use what I learned in this course" (Y1)
 -   "The subject matter of this course was not relevant to me" (Y2)
 -   "This was a great course" (Y3)
 
-**Students' scores of a aptitude test**: (score)
-
-The dataset includes the responses and scores of 141 students.
+**Students' scores of an aptitude test**: (score)
 
 Below is the head of the dataset.
 
@@ -63,7 +58,8 @@ Results
 
 #### Descriptive analysis
 
-Below is the bar charts/histograms of all the measurement variables.
+Below is the bar charts/histograms of all the measurement variables. All
+the scale test results are treated as nominal data.
 
 ![](Report_8_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
@@ -72,16 +68,33 @@ Below is the bar charts/histograms of all the measurement variables.
 Based on the research design and research questions, the following model
 is established:
 
+    model <- "
+      # measurement model
+      att1 =~ X1 + X2 + X3
+      att2 =~ X1a + X2a + X3a
+      eval =~ Y1 + Y2 + Y3
+
+      # regression model
+      att2 ~ att1
+      eval ~ att1 + att2
+
+      # residuals variance
+      X1 ~~ X1a
+      X2 ~~ X2a
+      X3 ~~ X3a
+
+    "
+
     ## Found more than one class "Model" in cache; using the first, from namespace 'lavaan'
 
-    ## lavaan (0.5-20) converged normally after  39 iterations
+    ## lavaan (0.5-20) converged normally after  52 iterations
     ## 
     ##   Number of observations                           141
     ## 
     ##   Estimator                                         ML
-    ##   Minimum Function Test Statistic               33.807
-    ##   Degrees of freedom                                30
-    ##   P-value (Chi-square)                           0.289
+    ##   Minimum Function Test Statistic               13.787
+    ##   Degrees of freedom                                21
+    ##   P-value (Chi-square)                           0.879
     ## 
     ## Parameter Estimates:
     ## 
@@ -91,49 +104,49 @@ is established:
     ## Latent Variables:
     ##                    Estimate  Std.Err  Z-value  P(>|z|)   Std.lv  Std.all
     ##   att1 =~                                                               
-    ##     X1                1.000                               1.217    0.773
-    ##     X2               -1.007    0.074  -13.693    0.000   -1.225   -0.775
-    ##     X3                1.069    0.074   14.538    0.000    1.301    0.793
+    ##     X1                1.000                               1.240    0.799
+    ##     X2               -0.993    0.076  -12.996    0.000   -1.231   -0.774
+    ##     X3                1.055    0.080   13.266    0.000    1.308    0.774
     ##   att2 =~                                                               
-    ##     X1a               1.000                               1.471    0.827
-    ##     X2a              -1.043    0.060  -17.283    0.000   -1.535   -0.838
-    ##     X3a               1.057    0.059   17.999    0.000    1.555    0.841
+    ##     X1a               1.000                               1.511    0.874
+    ##     X2a              -1.035    0.054  -19.030    0.000   -1.564   -0.876
+    ##     X3a               1.033    0.056   18.600    0.000    1.562    0.834
     ##   eval =~                                                               
-    ##     Y1                1.000                               1.283    0.789
-    ##     Y2               -0.797    0.094   -8.483    0.000   -1.022   -0.715
-    ##     Y3                0.828    0.095    8.683    0.000    1.062    0.728
+    ##     Y1                1.000                               1.374    0.861
+    ##     Y2               -0.710    0.098   -7.243    0.000   -0.975   -0.675
+    ##     Y3                0.765    0.101    7.596    0.000    1.051    0.729
     ## 
     ## Regressions:
     ##                    Estimate  Std.Err  Z-value  P(>|z|)   Std.lv  Std.all
     ##   att2 ~                                                                
-    ##     att1              1.008    0.071   14.260    0.000    0.834    0.834
+    ##     att1              1.024    0.071   14.336    0.000    0.840    0.840
     ##   eval ~                                                                
-    ##     att1              0.500    0.188    2.660    0.008    0.475    0.475
-    ##     att2             -0.078    0.148   -0.524    0.600   -0.089   -0.089
+    ##     att1              0.565    0.199    2.844    0.004    0.510    0.510
+    ##     att2             -0.122    0.154   -0.796    0.426   -0.135   -0.135
     ## 
     ## Covariances:
     ##                    Estimate  Std.Err  Z-value  P(>|z|)   Std.lv  Std.all
     ##   X1 ~~                                                                 
-    ##     X1a               0.897    0.017   51.275    0.000    0.897    0.897
+    ##     X1a               0.687    0.133    5.174    0.000    0.687    0.877
     ##   X2 ~~                                                                 
-    ##     X2a               0.888    0.019   47.396    0.000    0.888    0.888
+    ##     X2a               0.770    0.144    5.356    0.000    0.770    0.886
     ##   X3 ~~                                                                 
-    ##     X3a               0.928    0.016   56.712    0.000    0.928    0.928
+    ##     X3a               1.032    0.170    6.085    0.000    1.032    0.933
     ## 
     ## Variances:
     ##                    Estimate  Std.Err  Z-value  P(>|z|)   Std.lv  Std.all
-    ##     X1                1.000                               1.000    0.403
-    ##     X2                1.000                               1.000    0.400
-    ##     X3                1.000                               1.000    0.371
-    ##     X1a               1.000                               1.000    0.316
-    ##     X2a               1.000                               1.000    0.298
-    ##     X3a               1.000                               1.000    0.293
-    ##     Y1                1.000                               1.000    0.378
-    ##     Y2                1.000                               1.000    0.489
-    ##     Y3                1.000                               1.000    0.470
-    ##     att1              1.481    0.248    5.970    0.000    1.000    1.000
-    ##     att2              0.657    0.097    6.759    0.000    0.304    0.304
-    ##     eval              1.377    0.270    5.107    0.000    0.837    0.837
+    ##     X1                0.869    0.156    5.573    0.000    0.869    0.361
+    ##     X2                1.016    0.170    5.992    0.000    1.016    0.401
+    ##     X3                1.147    0.190    6.024    0.000    1.147    0.401
+    ##     X1a               0.706    0.130    5.428    0.000    0.706    0.236
+    ##     X2a               0.743    0.139    5.331    0.000    0.743    0.233
+    ##     X3a               1.069    0.168    6.372    0.000    1.069    0.305
+    ##     Y1                0.657    0.209    3.152    0.002    0.657    0.258
+    ##     Y2                1.134    0.169    6.713    0.000    1.134    0.544
+    ##     Y3                0.976    0.164    5.955    0.000    0.976    0.469
+    ##     att1              1.538    0.259    5.942    0.000    1.000    1.000
+    ##     att2              0.671    0.098    6.859    0.000    0.294    0.294
+    ##     eval              1.580    0.311    5.078    0.000    0.837    0.837
 
 Below are some of the key numbers of this model. The high p-value, CFI,
 and TLI values and low RMSEA value suggest that this model is solid.
@@ -160,19 +173,19 @@ high level of adequacy of the survey questions.
 <tbody>
 <tr class="odd">
 <td align="center">p.value</td>
-<td align="center">0.2886</td>
+<td align="center">0.8786</td>
 </tr>
 <tr class="even">
 <td align="center">CFI</td>
-<td align="center">0.9968</td>
+<td align="center">1</td>
 </tr>
 <tr class="odd">
 <td align="center">TLI</td>
-<td align="center">0.9961</td>
+<td align="center">1.01</td>
 </tr>
 <tr class="even">
 <td align="center">RMSEA</td>
-<td align="center">0.03</td>
+<td align="center">0</td>
 </tr>
 </tbody>
 </table>
@@ -296,33 +309,33 @@ between students' attitudes and evaluations.
 <tbody>
 <tr class="odd">
 <td align="center">Whole</td>
-<td align="center">0.289</td>
-<td align="center">0.997</td>
-<td align="center">0.996</td>
-<td align="center">0.03</td>
-<td align="center">0.5</td>
-<td align="center">2.66</td>
-<td align="center">0.008</td>
+<td align="center">0.879</td>
+<td align="center">1</td>
+<td align="center">1.01</td>
+<td align="center">0</td>
+<td align="center">0.565</td>
+<td align="center">2.844</td>
+<td align="center">0.004</td>
 </tr>
 <tr class="even">
 <td align="center">Set 1</td>
-<td align="center">0.088</td>
-<td align="center">0.983</td>
-<td align="center">0.979</td>
-<td align="center">0.072</td>
-<td align="center">0.535</td>
-<td align="center">1.889</td>
-<td align="center">0.059</td>
+<td align="center">0.232</td>
+<td align="center">0.993</td>
+<td align="center">0.988</td>
+<td align="center">0.054</td>
+<td align="center">0.684</td>
+<td align="center">2.339</td>
+<td align="center">0.019</td>
 </tr>
 <tr class="odd">
 <td align="center">Set 2</td>
-<td align="center">0.569</td>
+<td align="center">0.525</td>
 <td align="center">1</td>
-<td align="center">1.004</td>
+<td align="center">1.003</td>
 <td align="center">0</td>
-<td align="center">0.437</td>
-<td align="center">1.672</td>
-<td align="center">0.095</td>
+<td align="center">0.46</td>
+<td align="center">1.663</td>
+<td align="center">0.096</td>
 </tr>
 </tbody>
 </table>
@@ -342,19 +355,19 @@ between students' attitudes and evaluations.
 </thead>
 <tbody>
 <tr class="odd">
-<td align="center">-0.078</td>
-<td align="center">-0.524</td>
-<td align="center">0.6</td>
+<td align="center">-0.122</td>
+<td align="center">-0.796</td>
+<td align="center">0.426</td>
 </tr>
 <tr class="even">
-<td align="center">-0.065</td>
-<td align="center">-0.258</td>
-<td align="center">0.797</td>
+<td align="center">-0.156</td>
+<td align="center">-0.601</td>
+<td align="center">0.548</td>
 </tr>
 <tr class="odd">
-<td align="center">-0.065</td>
-<td align="center">-0.366</td>
-<td align="center">0.714</td>
+<td align="center">-0.085</td>
+<td align="center">-0.47</td>
+<td align="center">0.638</td>
 </tr>
 </tbody>
 </table>
@@ -371,7 +384,7 @@ Conclusions
 
 This report shows that the three questions in the survey have a high
 level of adequacy given their consistencies in the two rounds of
-responses that were received.
+responses received.
 
 Moreover, there doesn't seem to be a strong effect of attitudes toward
 the evaluation of the course when the student aptitude in math is
