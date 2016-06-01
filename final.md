@@ -10,22 +10,21 @@ Research questions
 
 1.  How well can the existing regular team stats help to predict winning
     matches of the NBA teams?
-2.  How can we classify the measurements?
+2.  How can the stats be classified according to the dataset?
 
 Data description
 ----------------
 
 The dataset that is used in this study is the [NBA team stats
 dataset](https://raw.githubusercontent.com/tyson-ni/nba/master/NBA_train.csv)
-created by [Tyson Ni](https://github.com/tyson-ni/) and shared on
-Github. It is not stated on the repository where the dataset was
-originally from.
+uploaded to Github by [Tyson Ni](https://github.com/tyson-ni/). It is
+not stated where the dataset was originally from.
 
 This dataset is entitled "NBA\_train" and is in CSV format. It includes
 the basic statistics of all the NBA teams in the regular season games
 from 1979-1980 to 2010-2011, excluding the shortened season of
-1998-1999. Each of the 835 row is the performance of a team in a season.
-22 variables are available in the dataset, including:
+1998-1999. Each of the 835 rows is the performance of a team in a given
+season. 22 variables are available in the dataset, including:
 
 -   **SeasonEnd**: the end year of the season
 -   **Team**: the name of the team
@@ -53,8 +52,8 @@ from 1979-1980 to 2010-2011, excluding the shortened season of
 -   **BLK**: total blocks during the season
 -   **TOV**: total turnovers during the season
 
-First, building upon these variables, some of other variables are
-created based on the existing ones.
+This dataset was manipulated in a few ways. First, some other variables
+are created based on the existing ones.
 
 -   **absPTS**: the difference between points and opponent points
 -   **FGP**: the percentage of field goals made to field goals attempted
@@ -64,11 +63,11 @@ created based on the existing ones.
     attempted
 -   **FTP**: the percentage of free throws made to free throws attempted
 
-Second, all the variables that are total numbers rather than percentages
-are further divided by 82 to be transformed from per season to per game
-statistics.
+Second, all the variables that are total numbers in a season rather than
+percentages are further divided by 82 to be transformed from per season
+to per game statistics.
 
-Third, all the teams are separated into three groups by the season:
+Third, all the teams are separated into three groups by season:
 
 -   Group 1: 1980-1989
 -   Group 2: 1990-1999
@@ -79,15 +78,16 @@ Analysis
 
 #### Descriptive analysis
 
-Some basic descriptive analysis was conducted to the dataset. Below are
-the change of the numbers of teams in the NBA league and the
-distribution of the number of wins in each season in the dataset.
+Some basic descriptive analysis was conducted. Below are the total
+numbers of teams in the NBA league and the distribution of the number of
+wins across the dataset.
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
-Below is the summary of the number of teams in the three time periods.
+Below is the summary of the number of teams in the three time periods
+that were created above.
 
 <table style="width:35%;">
 <colgroup>
@@ -123,17 +123,16 @@ Below is the summary of the number of teams in the three time periods.
 
 Thanks to the nature of the NBA games, a lot of the variables in the NBA
 games are highly correlated, as shown below in the correlation matrix
-based on all the numeric variables. Below is the correlation heatmap
-based on a selection of variables. It is natural that FG- and
-X2P-related variables are highly correlated with each other, both of
-which are pretty strongly correlated with assists. On the other hand,
-X3P-related variables seem to be the exceptions in this dataset.
+based on some numeric variables. It is natural that FG- and X2P-related
+variables are highly correlated with each other, both of which are
+pretty strongly correlated with assists. On the other hand, X3P-related
+variables seem to be the exceptions in this dataset.
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-#### Regression to predict winning match number
+#### Regression to predict the number of winning match
 
-To predict the number of winning matches, a regression model is
+To predict the number of winning match, a regression model is
 established. Because of the highly correlated nature of the data,
 variables that are highly correlated are not included in the data.
 
@@ -164,7 +163,7 @@ following:
 Moreover, **independence assumption** is tested using Durbin-Watson
 test. However, based on its result, the null hypothesis that the
 observations are independent can be rejected at 0.05 level. The problem
-is that I have selected a number of variables that are so strongly
+might be that I have selected a number of variables that are so strongly
 correlated with each other.
 
     ## 
@@ -192,10 +191,19 @@ proposed and tested against the assumptions.
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
+Below are the results of the VIF test.
+
     ##      ORB      DRB      AST      STL      BLK      TOV     X2PP     X3PP 
     ## 2.088187 1.397657 2.436624 1.676751 1.204133 2.063367 1.870642 1.959008
 
-According to the result, this model is able to interpret about 63% of
+    ## 
+    ##  Durbin-Watson test
+    ## 
+    ## data:  lm.1
+    ## DW = 0.97387, p-value < 2.2e-16
+    ## alternative hypothesis: true autocorrelation is greater than 0
+
+According to the result, this model is able to interpret about 64% of
 the variance in the dataset.
 
     ## 
@@ -225,7 +233,11 @@ the variance in the dataset.
     ## Multiple R-squared:  0.6387, Adjusted R-squared:  0.6352 
     ## F-statistic: 182.5 on 8 and 826 DF,  p-value: < 2.2e-16
 
-The model is used to predict the winning matches.
+The model is used to predict the winning matches. The differences
+between real winning match and predicted winning match are calculated.
+According to the histogram, even though half of the instances are within
+2 match difference, there are also some cases where the difference is as
+large as 30 matches.
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-15-1.png)
 
@@ -420,17 +432,18 @@ violation of the assumptions.
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-20-1.png)
 
-Moreover, the mean of the match difference using the new model
+Moreover, the mean of the match difference using the new model is also
+significantly smaller than the other model.
 
-<table style="width:33%;">
+<table style="width:49%;">
 <colgroup>
 <col width="12%" />
-<col width="20%" />
+<col width="36%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th align="center">Model</th>
-<th align="center">Mean_absolute</th>
+<th align="center">Mean_absolute_difference</th>
 </tr>
 </thead>
 <tbody>
@@ -470,15 +483,14 @@ Below is the heatmap of the variables.
 ![](final_files/figure-markdown_strict/unnamed-chunk-23-1.png)
 
 Given the interval/ratio nature of the dataset, classical MDS method is
-used to analyze the data, using 2-dimensional solution. Package Stats
-version 3.2.4 is used for this analysis. What is plotted below are the
-results of all time and the three periods in the data.
+used to analyze the dataThe MDS plots of all time and the three time
+periods are presentede below, all of which use 2-dimension solutions:
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-24-1.png)
 
-Below are the evaluation of the goodness of fit of the four fittings.
-The results indicated that this model is not so much well fitted to the
-three subsets using a two-dimensional solution.
+Below is the evaluation of the goodness of fit of the four fittings. The
+results indicate that this model is not so much well fitted to the three
+subsets using a two-dimensional solution.
 
 <table style="width:19%;">
 <colgroup>
@@ -498,15 +510,15 @@ three subsets using a two-dimensional solution.
 </tr>
 <tr class="even">
 <td align="center">Period 1</td>
-<td align="center">0.847</td>
+<td align="center">0.747</td>
 </tr>
 <tr class="odd">
 <td align="center">Period 2</td>
-<td align="center">0.89</td>
+<td align="center">0.782</td>
 </tr>
 <tr class="even">
 <td align="center">Period 3</td>
-<td align="center">0.863</td>
+<td align="center">0.786</td>
 </tr>
 </tbody>
 </table>
@@ -514,9 +526,11 @@ three subsets using a two-dimensional solution.
 During the past 30 years, there has been not only a great increase in
 the total number of 3-point goals made and the 3-point goal percentage,
 as shown in the illustration below. However, 3-point goal related
-variables are still highly different from other measurements.
+variables are still highly different from other measurements, even
+during the past 10 years.
 
 ![](final_files/figure-markdown_strict/unnamed-chunk-26-1.png)
 
-Moreover, it seems that 2-point goal percentage, defensive rebound, and
-assist are the variables that are the most close to winning matches.
+Moreover, the pattern of measurements has been pretty consistent during
+the three decades. Moreover, 2-point goal percentage, defensive rebound,
+and assist are the variables that are the most close to winning matches.

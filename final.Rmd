@@ -181,13 +181,13 @@ Kai Li
 ## Research questions
 
 1. How well can the existing regular team stats help to predict winning matches of the NBA teams?
-2. How can we classify the measurements?
+2. How can the stats be classified according to the dataset?
 
 ## Data description
 
-The dataset that is used in this study is the [NBA team stats dataset](https://raw.githubusercontent.com/tyson-ni/nba/master/NBA_train.csv) created by [Tyson Ni](https://github.com/tyson-ni/) and shared on Github. It is not stated on the repository where the dataset was originally from. 
+The dataset that is used in this study is the [NBA team stats dataset](https://raw.githubusercontent.com/tyson-ni/nba/master/NBA_train.csv) uploaded to Github by [Tyson Ni](https://github.com/tyson-ni/). It is not stated where the dataset was originally from. 
 
-This dataset is entitled "NBA_train" and is in CSV format. It includes the basic statistics of all the NBA teams in the regular season games from 1979-1980 to 2010-2011, excluding the shortened season of 1998-1999. Each of the `r nrow(data)` row is the performance of a team in a season. `r length(data)` variables are available in the dataset, including:
+This dataset is entitled "NBA_train" and is in CSV format. It includes the basic statistics of all the NBA teams in the regular season games from 1979-1980 to 2010-2011, excluding the shortened season of 1998-1999. Each of the `r nrow(data)` rows is the performance of a team in a given season. `r length(data)` variables are available in the dataset, including:
 
 - **SeasonEnd**: the end year of the season
 - **Team**: the name of the team
@@ -212,7 +212,7 @@ This dataset is entitled "NBA_train" and is in CSV format. It includes the basic
 - **BLK**: total blocks during the season
 - **TOV**: total turnovers during the season
 
-First, building upon these variables, some of other variables are created based on the existing ones.
+This dataset was manipulated in a few ways. First, some other variables are created based on the existing ones.
 
 ``` {R}
 
@@ -244,9 +244,9 @@ colnames(data.1)[1] <- "SeasonEnd"
 - **X3PP**: the percentage of 3-point goals made to 3-point goals attempted
 - **FTP**: the percentage of free throws made to free throws attempted
 
-Second, all the variables that are total numbers rather than percentages are further divided by 82 to be transformed from per season to per game statistics. 
+Second, all the variables that are total numbers in a season rather than percentages are further divided by 82 to be transformed from per season to per game statistics. 
 
-Third, all the teams are separated into three groups by the season:
+Third, all the teams are separated into three groups by season:
 
 - Group 1: 1980-1989
 - Group 2: 1990-1999
@@ -280,7 +280,7 @@ data.1 <- read.csv("final.dataset.csv")
 
 #### Descriptive analysis
 
-Some basic descriptive analysis was conducted to the dataset. Below are the change of the numbers of teams in the NBA league and the distribution of the number of wins in each season in the dataset.
+Some basic descriptive analysis was conducted. Below are the total numbers of teams in the NBA league and the distribution of the number of wins across the dataset.
 
 ``` {R fig.width = 7, fig.height = 4}
 
@@ -293,11 +293,12 @@ plot
 
 ``` {R  fig.width = 7, fig.height = 4}
 
-plot(as.factor(data.1$W), main = "Bar chart of team wins", ylab = "Count", xlab = "Wins")
+plot(as.factor(data.1$W), main = "Bar chart of team wins", ylab = "Count", xlab = "Wins",
+     ylim = c(0, 40))
 
 ```
 
-Below is the summary of the number of teams in the three time periods.
+Below is the summary of the number of teams in the three time periods that were created above.
 
 ``` {R}
 
@@ -309,7 +310,7 @@ pander(period.table)
 
 ```
 
-Thanks to the nature of the NBA games, a lot of the variables in the NBA games are highly correlated, as shown below in the correlation matrix based on all the numeric variables. Below is the correlation heatmap based on a selection of variables. It is natural that FG- and X2P-related variables are highly correlated with each other, both of which are pretty strongly correlated with assists. On the other hand, X3P-related variables seem to be the exceptions in this dataset.
+Thanks to the nature of the NBA games, a lot of the variables in the NBA games are highly correlated, as shown below in the correlation matrix based on some numeric variables. It is natural that FG- and X2P-related variables are highly correlated with each other, both of which are pretty strongly correlated with assists. On the other hand, X3P-related variables seem to be the exceptions in this dataset.
 
 ``` {R fig.width = 7, fig.height = 6}
 
@@ -318,9 +319,9 @@ cor.plot(cor.matrix)
 
 ```
 
-#### Regression to predict winning match number
+#### Regression to predict the number of winning match
 
-To predict the number of winning matches, a regression model is established. Because of the highly correlated nature of the data, variables that are highly correlated are not included in the data.
+To predict the number of winning match, a regression model is established. Because of the highly correlated nature of the data, variables that are highly correlated are not included in the data.
 
 > model <- lm(W ~ PTS + oppPTS + FG + X2P + ORB + DRB + AST + STL + BLK + TOV + FGP + X2PP + X3PP)
 
@@ -340,7 +341,7 @@ According to the diagnose diagram presented above, it seems that the assumptions
 - **normality assumption**: all the dots are plotted well in the QQ plot
 - **influential outliers**: based on Cook's distance plot, no observation is an influential outliers given their relatively low values.
 
-Moreover, **independence assumption** is tested using Durbin-Watson test. However, based on its result, the null hypothesis that the observations are independent can be rejected at 0.05 level. The problem is that I have selected a number of variables that are so strongly correlated with each other.
+Moreover, **independence assumption** is tested using Durbin-Watson test. However, based on its result, the null hypothesis that the observations are independent can be rejected at 0.05 level. The problem might be that I have selected a number of variables that are so strongly correlated with each other.
 
 ``` {R}
 
@@ -367,6 +368,8 @@ cor.plot(cor.matrix.2, numbers = T, cex = 0.7)
 
 ```
 
+Below are the results of the VIF test.
+
 ``` {R}
 
 lm.1 <- lm(W ~ ORB + DRB + AST + STL + BLK + TOV + X2PP + X3PP,
@@ -374,9 +377,11 @@ lm.1 <- lm(W ~ ORB + DRB + AST + STL + BLK + TOV + X2PP + X3PP,
 
 vif(lm.1)
 
+dwtest(lm.1)
+
 ```
 
-According to the result, this model is able to interpret about 63% of the variance in the dataset.
+According to the result, this model is able to interpret about 64% of the variance in the dataset.
 
 ``` {R}
 
@@ -384,7 +389,7 @@ summary(lm.1)
 
 ```
 
-The model is used to predict the winning matches.
+The model is used to predict the winning matches. The differences between real winning match and predicted winning match are calculated. According to the histogram, even though half of the instances are within 2 match difference, there are also some cases where the difference is as large as 30 matches.
 
 ``` {R}
 
@@ -464,12 +469,12 @@ hist(data.3$difference,
 
 ```
 
-Moreover, the mean of the match difference using the new model 
+Moreover, the mean of the match difference using the new model is also significantly smaller than the other model.
 
 ``` {R}
 
 difference_table <- data.frame(Model = c("Original", "New"),
-                               Mean_absolute = (c(different.2, different.3)))
+                               Mean_absolute_difference = (c(different.2, different.3)))
 pander(difference_table)
 
 ```
@@ -500,14 +505,14 @@ heatmap(cor.matrix.1)
 
 ```
 
-Given the interval/ratio nature of the dataset, classical MDS method is used to analyze the data, using 2-dimensional solution. Package Stats version 3.2.4 is used for this analysis. What is plotted below are the results of all time and the three periods in the data.
+Given the interval/ratio nature of the dataset, classical MDS method is used to analyze the dataThe MDS plots of all time and the three time periods are presentede below, all of which use 2-dimension solutions:
 
 ``` {R fig.width = 7, fig.height = 8}
 
 fit_cla.1 <- cmdscale(dist(cor.matrix.1), k = 2, eig = T)
-fit_cla.2 <- cmdscale(dist(cor.matrix.2), k = 3, eig = T)
-fit_cla.3 <- cmdscale(dist(cor.matrix.3), k = 3, eig = T)
-fit_cla.4 <- cmdscale(dist(cor.matrix.4), k = 3, eig = T)
+fit_cla.2 <- cmdscale(dist(cor.matrix.2), k = 2, eig = T)
+fit_cla.3 <- cmdscale(dist(cor.matrix.3), k = 2, eig = T)
+fit_cla.4 <- cmdscale(dist(cor.matrix.4), k = 2, eig = T)
 
 par(mfrow = c(2,2))
 
@@ -515,13 +520,10 @@ x.1 <- as.data.frame(fit_cla.1$points[,1])
 y.1 <- as.data.frame(fit_cla.1$points[,2])
 x.2 <- as.data.frame(fit_cla.2$points[,1])
 y.2 <- as.data.frame(fit_cla.2$points[,2])
-z.2 <- as.data.frame(fit_cla.2$points[,3])
 x.3 <- as.data.frame(fit_cla.3$points[,1])
 y.3 <- as.data.frame(fit_cla.3$points[,2])
-z.3 <- as.data.frame(fit_cla.3$points[,3])
 x.4 <- as.data.frame(fit_cla.4$points[,1])
 y.4 <- as.data.frame(fit_cla.4$points[,2])
-z.4 <- as.data.frame(fit_cla.4$points[,3])
 
 y.2[,1] <- 0-as.numeric(y.2[,])
 x.1[,1] <- 0-as.numeric(x.1[,])
@@ -532,8 +534,7 @@ cluster.data <- data.frame(Measure = rownames(x.1),
                                        times = 4),
                            group = c(rep("all", times = 11), rep("period 1", 11), rep("period 2", 11), rep("period 3", 11)),
                            x = c(x.1[,1], x.2[,1], x.3[,1], x.4[,1]),
-                           y = c(y.1[,1], y.2[,1], y.3[,1], y.4[,1]),
-                           z = c(rep(0, 11), z.2[,1], z.3[,1], z.4[,1]))
+                           y = c(y.1[,1], y.2[,1], y.3[,1], y.4[,1]))
 
 plot <- ggplot(cluster.data, aes(x = x, y = y, colour = group, label = label)) +
   geom_text(size = 3) +
@@ -542,7 +543,7 @@ plot
 
 ```
 
-Below are the evaluation of the goodness of fit of the four fittings. The results indicated that this model is not so much well fitted to the three subsets using a two-dimensional solution. 
+Below is the evaluation of the goodness of fit of the four fittings. The results indicate that this model is not so much well fitted to the three subsets using a two-dimensional solution. 
 
 ``` {R}
 
@@ -556,7 +557,7 @@ pander(gof.table)
 
 ```
 
-During the past 30 years, there has been not only a great increase in the total number of 3-point goals made and the 3-point goal percentage, as shown in the illustration below. However, 3-point goal related variables are still highly different from other measurements.
+During the past 30 years, there has been not only a great increase in the total number of 3-point goals made and the 3-point goal percentage, as shown in the illustration below. However, 3-point goal related variables are still highly different from other measurements, even during the past 10 years.
 
 ``` {R}
 
@@ -567,4 +568,6 @@ plot
 
 ```
 
-Moreover, it seems that 2-point goal percentage, defensive rebound, and assist are the variables that are the most close to winning matches. 
+Moreover, the pattern of measurements has been pretty consistent during the three decades. Moreover, 2-point goal percentage, defensive rebound, and assist are the variables that are the most close to winning matches. 
+
+
