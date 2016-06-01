@@ -96,7 +96,7 @@ model <- "
   # regression model
   att2 ~ att1
   eval ~ att1 + att2
-
+  
   # residuals variance
   X1 ~~ X1a
   X2 ~~ X2a
